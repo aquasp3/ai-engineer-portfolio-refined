@@ -4,23 +4,73 @@ import GlassSection from "./GlassSection";
 const AboutSection = () => {
   return (
     <GlassSection id="about">
-      <h2 className="text-2xl font-bold mb-1 text-accent-green">About Me</h2>
-      <div className="w-12 h-1 bg-primary/50 mb-8 rounded-full" />
+      {/* TITLE */}
+      <h2
+        className="text-2xl font-bold mb-2"
+        style={{ color: "var(--text-body)" }}
+      >
+        About Me
+      </h2>
+
+      <div
+        className="w-12 h-1 mb-8 rounded-full"
+        style={{ background: "var(--accent-color)", opacity: 0.6 }}
+      />
+
+      {/* CONTENT */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="elite-card rounded-xl p-6 md:p-8 space-y-4"
+        className="elite-card p-6 md:p-8 space-y-5"
       >
-        <p className="text-muted-foreground leading-relaxed">
-          I'm an AI/ML engineering student with a strong foundation in <span className="text-foreground font-medium">Machine Learning</span>, <span className="text-foreground font-medium">Natural Language Processing</span>, and <span className="text-foreground font-medium">Generative AI</span>. My work focuses on building practical, deployable AI solutions — from classification pipelines to LLM-powered applications.
+        {/* PARA 1 */}
+        <p
+          className="leading-relaxed text-sm md:text-base"
+          style={{ color: "var(--text-body)", opacity: 0.85 }}
+        >
+          I'm an AI/ML engineering student with a strong foundation in{" "}
+          <span style={{ color: "var(--accent-color)", fontWeight: 500 }}>
+            Machine Learning
+          </span>
+          ,{" "}
+          <span style={{ color: "var(--accent-color)", fontWeight: 500 }}>
+            Natural Language Processing
+          </span>
+          , and{" "}
+          <span style={{ color: "var(--secondary-color)", fontWeight: 500 }}>
+            Generative AI
+          </span>
+          . My work focuses on building practical, deployable AI solutions —
+          from classification pipelines to LLM-powered applications.
         </p>
-        <p className="text-muted-foreground leading-relaxed">
-          I've built an <span className="text-foreground font-medium">AI Resume Builder</span> using LLMs that generates structured, job-ready resumes from user input. I also have hands-on experience with <span className="text-foreground font-medium">LangChain</span> — working with chains, agents, and memory to build context-aware AI applications.
+
+        {/* PARA 2 */}
+        <p
+          className="leading-relaxed text-sm md:text-base"
+          style={{ color: "var(--text-body)", opacity: 0.85 }}
+        >
+          I've built an{" "}
+          <span style={{ color: "var(--accent-color)", fontWeight: 500 }}>
+            AI Resume Builder
+          </span>{" "}
+          using LLMs that generates structured, job-ready resumes from user
+          input. I also have hands-on experience with{" "}
+          <span style={{ color: "var(--accent-color)", fontWeight: 500 }}>
+            LangChain
+          </span>{" "}
+          — working with chains, agents, and memory to build context-aware AI
+          applications.
         </p>
-        <p className="text-muted-foreground leading-relaxed">
-          I'm driven by building real-world AI tools that solve genuine problems, with measurable results and clean engineering practices.
+
+        {/* PARA 3 */}
+        <p
+          className="leading-relaxed text-sm md:text-base"
+          style={{ color: "var(--text-body)", opacity: 0.85 }}
+        >
+          I'm driven by building real-world AI tools that solve genuine problems,
+          with measurable results and clean engineering practices.
         </p>
       </motion.div>
     </GlassSection>
