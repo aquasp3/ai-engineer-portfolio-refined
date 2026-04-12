@@ -2,16 +2,16 @@ import { motion } from "framer-motion";
 import GlassSection from "./GlassSection";
 
 const learningItems = [
-  "Transformer Architectures & Attention Mechanisms",
-  "LangChain & LLM Application Development",
-  "MLOps & Model Deployment Pipelines",
-  "Advanced Computer Vision with PyTorch",
+  "Improving AI Resume Builder — new features & polished UI",
+  "Exploring advanced LangChain concepts (agents, tools, RAG)",
+  "Writing technical blogs on ML & Generative AI",
+  "Deepening LLM application development skills",
 ];
 
 const CurrentlyLearningSection = () => {
   return (
     <GlassSection>
-      <h2 className="text-2xl font-bold mb-1 text-accent-green">Currently Learning</h2>
+      <h2 className="text-2xl font-bold mb-1 text-accent-green">Currently Building</h2>
       <div className="w-12 h-1 bg-primary/50 mb-8 rounded-full" />
       <div className="grid gap-3 sm:grid-cols-2">
         {learningItems.map((item, i) => (

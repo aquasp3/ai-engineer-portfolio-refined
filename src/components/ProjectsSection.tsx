@@ -5,20 +5,26 @@ import GlassSection from "./GlassSection";
 const projects = [
   {
     title: "Fake News Detection",
-    description: "Built a machine learning model to classify fake and real news using NLP techniques. Implemented TF-IDF vectorization and multiple classification algorithms achieving 87% accuracy.",
-    tech: ["Python", "Scikit-Learn", "TF-IDF"],
+    description: "Achieved 87% accuracy using TF-IDF, Logistic Regression, SVM, Naive Bayes, and Random Forest. Built a full NLP pipeline with text preprocessing, feature extraction, and model evaluation.",
+    tech: ["Python", "Scikit-Learn", "TF-IDF", "NLP"],
     github: "https://github.com/aquasp3",
   },
   {
     title: "AQI Prediction Model",
-    description: "Developed a regression model to predict Air Quality Index using environmental datasets. Feature engineering improved model performance to R² = 0.85.",
-    tech: ["Python", "Pandas", "NumPy"],
+    description: "Achieved R² score of 0.85 using regression techniques on environmental datasets. Applied feature engineering and hyperparameter tuning to optimize predictive performance.",
+    tech: ["Python", "Pandas", "NumPy", "Regression"],
     github: "https://github.com/aquasp3",
   },
   {
     title: "Smart Irrigation System",
-    description: "Designed an automated irrigation system using soil moisture sensors, reducing manual irrigation effort by approximately 60%.",
-    tech: ["Arduino", "Sensors"],
+    description: "Reduced manual irrigation effort by ~60% through IoT-based automation. Built using soil moisture sensors with automated trigger logic for water control.",
+    tech: ["Arduino", "IoT", "Sensors"],
+    github: "https://github.com/aquasp3",
+  },
+  {
+    title: "Rule-Based System (India Post)",
+    description: "Designed a logic-based workflow system for structured decision making. Demonstrated systematic problem-solving with conditional rules and process automation.",
+    tech: ["Python", "Rule Engine", "Logic"],
     github: "https://github.com/aquasp3",
   },
 ];
@@ -26,7 +32,7 @@ const projects = [
 const ProjectsSection = () => {
   return (
     <GlassSection id="projects">
-      <h2 className="text-2xl font-bold mb-1 text-accent-green">Selected Projects</h2>
+      <h2 className="text-2xl font-bold mb-1 text-accent-green">Projects</h2>
       <div className="w-12 h-1 bg-primary/50 mb-8 rounded-full" />
       <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
         {projects.map((project, i) => (
@@ -53,7 +59,7 @@ const ProjectsSection = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              <Github size={15} className="icon-adaptive" />
+              <Github size={15} />
               View on GitHub
             </a>
           </motion.div>

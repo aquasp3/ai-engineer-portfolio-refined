@@ -1,4 +1,4 @@
-import { ArrowDown, Mail, ChevronDown } from "lucide-react";
+import { ArrowDown, Github, Linkedin, Mail, ChevronDown } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 
 const container: Variants = {
@@ -24,38 +24,56 @@ const HeroSection = () => {
         className="relative z-10 text-center px-6 max-w-3xl mx-auto"
       >
         <motion.p variants={item} className="text-sm text-accent-green font-semibold mb-6 tracking-[0.25em] uppercase font-sans">
-          Hi, I'm
+          Hi, I'm Sathvik Konduri
         </motion.p>
         <motion.h1
           variants={item}
-          className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 text-accent-green"
-          style={{ letterSpacing: "3px" }}
+          className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-accent-green leading-tight"
         >
-          SATHVIK KONDURI
+          Building AI Systems Using Machine Learning & Generative AI
         </motion.h1>
-        <motion.p variants={item} className="text-lg md:text-xl text-foreground font-medium mb-4 tracking-wide">
-          AI / ML Engineering Student
+        <motion.p variants={item} className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto leading-relaxed mb-12">
+          AIML student with hands-on experience in ML, NLP, and LLM-powered applications.
         </motion.p>
-        <motion.p variants={item} className="text-muted-foreground text-sm md:text-base max-w-lg mx-auto leading-relaxed mb-12">
-          Building intelligent systems with machine learning, NLP, and real-world problem solving.
-        </motion.p>
-        <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <motion.div variants={item} className="flex flex-wrap items-center justify-center gap-3">
           <motion.a
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             href="#projects"
-            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8 h-12 btn-green rounded-full text-sm"
+            className="inline-flex items-center justify-center gap-2 px-7 h-11 btn-green rounded-full text-sm"
           >
-            <ArrowDown size={16} />
+            <ArrowDown size={15} />
             View Projects
           </motion.a>
           <motion.a
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            href="#contact"
-            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-8 h-12 elite-card rounded-full text-sm font-medium text-foreground"
+            href="https://github.com/aquasp3"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
           >
-            <Mail size={16} />
+            <Github size={15} />
+            GitHub
+          </motion.a>
+          <motion.a
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            href="https://linkedin.com/in/sathvikkonduri"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
+          >
+            <Linkedin size={15} />
+            LinkedIn
+          </motion.a>
+          <motion.a
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            href="#contact"
+            className="inline-flex items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
+          >
+            <Mail size={15} />
             Contact
           </motion.a>
         </motion.div>
