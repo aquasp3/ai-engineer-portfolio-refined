@@ -6,80 +6,58 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --bg: #FFF7E2;
+    --text: #1A1A1A;
+    --primary-color: #4F633D;
+    --secondary-color: #8BA194;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-
-    --primary: 160 84% 39%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-
-    --accent: 160 40% 96%;
-    --accent-foreground: 160 84% 30%;
-
+    --background: 42 100% 94%;
+    --foreground: 0 0% 10%;
+    --card: 42 100% 96%;
+    --card-foreground: 0 0% 10%;
+    --popover: 42 100% 96%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 91 23% 32%;
+    --primary-foreground: 42 100% 94%;
+    --secondary: 142 12% 59%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 42 60% 90%;
+    --muted-foreground: 0 0% 35%;
+    --accent: 142 12% 59%;
+    --accent-foreground: 42 100% 94%;
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 160 84% 39%;
-
+    --border: 142 12% 70%;
+    --input: 142 12% 70%;
+    --ring: 91 23% 32%;
     --radius: 0.75rem;
-
-    --accent-color: #10B981;
-    --text-body: #1E293B;
-    --card-bg: #FFFFFF;
-    --card-border: #E2E8F0;
-    --page-bg: #F8FAFC;
-
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 0 0% 100%;
+    --bg: #0F1411;
+    --text: #FFF7E2;
+    --primary-color: #4F633D;
+    --secondary-color: #8BA194;
 
-    --card: 222 47% 8%;
-    --card-foreground: 0 0% 100%;
-
-    --popover: 222 47% 8%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 160 84% 39%;
-    --primary-foreground: 222 47% 6%;
-
-    --secondary: 222 33% 15%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 222 33% 18%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 160 50% 20%;
-    --accent-foreground: 160 84% 70%;
-
+    --background: 137 19% 7%;
+    --foreground: 42 100% 94%;
+    --card: 137 19% 10%;
+    --card-foreground: 42 100% 94%;
+    --popover: 137 19% 10%;
+    --popover-foreground: 42 100% 94%;
+    --primary: 91 23% 32%;
+    --primary-foreground: 42 100% 94%;
+    --secondary: 142 12% 59%;
+    --secondary-foreground: 42 100% 94%;
+    --muted: 137 12% 18%;
+    --muted-foreground: 42 24% 80%;
+    --accent: 142 12% 59%;
+    --accent-foreground: 42 100% 94%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 160 50% 30%;
-    --input: 222 33% 20%;
-    --ring: 160 84% 39%;
-
-    --accent-color: #10B981;
-    --text-body: #FFFFFF;
-    --card-bg: rgba(17, 24, 39, 0.8);
-    --card-border: #10B981;
-    --page-bg: transparent;
+    --border: 142 12% 45%;
+    --input: 137 12% 22%;
+    --ring: 142 12% 59%;
   }
 }
 
@@ -92,8 +70,9 @@
   }
 
   body {
-    @apply text-foreground font-sans antialiased;
-    background-color: var(--page-bg);
+    @apply font-sans antialiased;
+    background-color: var(--bg);
+    color: var(--text);
   }
 
   html {
@@ -102,64 +81,27 @@
 }
 
 @layer utilities {
-  .text-accent-green {
-    color: var(--accent-color);
-  }
-
-  .green-gradient-text {
-    color: var(--accent-color);
-  }
-
-  .dark .elite-card {
-    background: rgba(17, 24, 39, 0.8);
-    border: 1px solid #10B981;
-  }
-
   .elite-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  }
-
-  .dark .elite-nav {
-    background: rgba(17, 24, 39, 0.95);
-    border: 1px solid rgba(16, 185, 129, 0.4);
+    background: rgba(255, 247, 226, 0.05);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(139, 161, 148, 0.2);
+    border-radius: 0.75rem;
   }
 
   .elite-nav {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    background: rgba(139, 161, 148, 0.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(139, 161, 148, 0.2);
   }
 
   .btn-green {
-    background: linear-gradient(135deg, #34D399 0%, #10B981 50%, #059669 100%);
-    color: #0f172a;
+    background: var(--primary-color);
+    color: #FFF7E2;
     font-weight: 600;
   }
 
   .btn-green:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
-  }
-
-  .elite-card:hover {
-    transform: translateY(-2px);
-  }
-
-  .dark .elite-card:hover {
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
-  }
-
-  .elite-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  }
-
-  .dark .icon-adaptive {
-    color: #FFFFFF;
-  }
-
-  .icon-adaptive {
-    color: #1E293B;
+    box-shadow: 0 8px 18px rgba(79, 99, 61, 0.25);
   }
 }
