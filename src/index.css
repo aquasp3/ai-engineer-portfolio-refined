@@ -4,16 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =========================
+   THEME VARIABLES
+========================= */
+
 @layer base {
   :root {
+    /* Light Mode (DEFAULT) */
     --background: 42 100% 94%;
     --foreground: 95 24% 20%;
 
     --card: 42 100% 96%;
     --card-foreground: 95 24% 20%;
-
-    --popover: 42 100% 96%;
-    --popover-foreground: 95 24% 20%;
 
     --primary: 91 23% 32%;
     --primary-foreground: 42 100% 94%;
@@ -21,40 +23,26 @@
     --secondary: 142 12% 59%;
     --secondary-foreground: 95 24% 20%;
 
-    --muted: 42 60% 90%;
-    --muted-foreground: 142 8% 45%;
-
-    --accent: 142 12% 59%;
-    --accent-foreground: 42 100% 94%;
-
-    --destructive: 0 72% 50%;
-    --destructive-foreground: 0 0% 100%;
-
     --border: 142 12% 70%;
-    --input: 142 12% 70%;
-    --ring: 91 23% 32%;
 
-    --radius: 0.75rem;
-
+    /* YOUR CUSTOM COLORS */
     --accent-color: #8BA194;
     --text-body: #4F633D;
     --card-bg: #FFF7E2;
     --card-border: #8BA194;
     --page-bg: #FFF7E2;
 
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
   }
 
   .dark {
+    /* Dark Mode */
     --background: 95 24% 9%;
     --foreground: 42 100% 94%;
 
     --card: 95 24% 12%;
     --card-foreground: 42 100% 94%;
-
-    --popover: 95 24% 12%;
-    --popover-foreground: 42 100% 94%;
 
     --primary: 91 23% 32%;
     --primary-foreground: 42 100% 94%;
@@ -62,26 +50,20 @@
     --secondary: 142 12% 59%;
     --secondary-foreground: 42 100% 94%;
 
-    --muted: 95 20% 18%;
-    --muted-foreground: 42 24% 80%;
-
-    --accent: 142 12% 59%;
-    --accent-foreground: 42 100% 94%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
     --border: 142 12% 45%;
-    --input: 95 20% 22%;
-    --ring: 142 12% 59%;
 
+    /* DARK MODE FIX (IMPORTANT) */
     --accent-color: #8BA194;
     --text-body: #FFF7E2;
     --card-bg: rgba(255, 247, 226, 0.05);
     --card-border: rgba(139, 161, 148, 0.2);
-    --page-bg: transparent;
+    --page-bg: #0F1411; /* FIXED */
   }
 }
+
+/* =========================
+   BASE STYLES
+========================= */
 
 @layer base {
   * {
@@ -93,8 +75,10 @@
 
   body {
     @apply font-sans antialiased;
-    background-color: var(--bg);
-    color: var(--text);
+
+    /* FIXED: using correct variables */
+    background-color: var(--page-bg);
+    color: var(--text-body);
   }
 
   html {
@@ -102,7 +86,13 @@
   }
 }
 
+/* =========================
+   UTILITIES
+========================= */
+
 @layer utilities {
+
+  /* Accent text */
   .text-accent-green {
     color: var(--accent-color);
   }
@@ -111,14 +101,40 @@
     color: var(--accent-color);
   }
 
-  .dark .elite-card {
-    background: rgba(255, 247, 226, 0.05);
-    border: 1px solid rgba(139, 161, 148, 0.2);
-  }
+  /* =========================
+     CARDS (GLASS SYSTEM)
+  ========================= */
 
   .elite-card {
-    background: #FFF7E2;
-    border: 1px solid #8BA194;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 4px 10px -1px rgb(79 99 61 / 0.16);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .elite-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.2);
+  }
+
+  .dark .elite-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+  }
+
+  .dark .elite-card:hover {
+    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.3);
+  }
+
+  /* =========================
+     NAVBAR
+  ========================= */
+
+  .elite-nav {
+    background: rgba(255, 247, 226, 0.9);
+    border: 1px solid rgba(139, 161, 148, 0.45);
+    backdrop-filter: blur(10px);
     box-shadow: 0 4px 10px -1px rgb(79 99 61 / 0.16);
   }
 
@@ -127,16 +143,15 @@
     border: 1px solid rgba(139, 161, 148, 0.2);
   }
 
-  .elite-nav {
-    background: rgba(255, 247, 226, 0.9);
-    border: 1px solid rgba(139, 161, 148, 0.45);
-    box-shadow: 0 4px 10px -1px rgb(79 99 61 / 0.16);
-  }
+  /* =========================
+     BUTTONS
+  ========================= */
 
   .btn-green {
     background: #4F633D;
     color: #FFF7E2;
     font-weight: 600;
+    border-radius: 0.5rem;
   }
 
   .btn-green:hover {
@@ -146,23 +161,15 @@
     box-shadow: 0 8px 18px rgba(79, 99, 61, 0.25);
   }
 
-  .elite-card:hover {
-    transform: translateY(-2px);
-  }
+  /* =========================
+     ICONS
+  ========================= */
 
-  .dark .elite-card:hover {
-    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.25);
-  }
-
-  .elite-card:hover {
-    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.16);
+  .icon-adaptive {
+    color: #4F633D;
   }
 
   .dark .icon-adaptive {
     color: #FFF7E2;
-  }
-
-  .icon-adaptive {
-    color: #4F633D;
   }
 }
