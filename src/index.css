@@ -6,79 +6,79 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
+    --background: 42 100% 94%;
+    --foreground: 95 24% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 42 100% 96%;
+    --card-foreground: 95 24% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 42 100% 96%;
+    --popover-foreground: 95 24% 20%;
 
-    --primary: 160 84% 39%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 91 23% 32%;
+    --primary-foreground: 42 100% 94%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 142 12% 59%;
+    --secondary-foreground: 95 24% 20%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 42 60% 90%;
+    --muted-foreground: 142 8% 45%;
 
-    --accent: 160 40% 96%;
-    --accent-foreground: 160 84% 30%;
+    --accent: 142 12% 59%;
+    --accent-foreground: 42 100% 94%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 160 84% 39%;
+    --border: 142 12% 70%;
+    --input: 142 12% 70%;
+    --ring: 91 23% 32%;
 
     --radius: 0.75rem;
 
-    --accent-color: #10B981;
-    --text-body: #1E293B;
-    --card-bg: #FFFFFF;
-    --card-border: #E2E8F0;
-    --page-bg: #F8FAFC;
+    --accent-color: #8BA194;
+    --text-body: #4F633D;
+    --card-bg: #FFF7E2;
+    --card-border: #8BA194;
+    --page-bg: #FFF7E2;
 
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 0 0% 100%;
+    --background: 95 24% 9%;
+    --foreground: 42 100% 94%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 0 0% 100%;
+    --card: 95 24% 12%;
+    --card-foreground: 42 100% 94%;
 
-    --popover: 222 47% 8%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 95 24% 12%;
+    --popover-foreground: 42 100% 94%;
 
-    --primary: 160 84% 39%;
-    --primary-foreground: 222 47% 6%;
+    --primary: 91 23% 32%;
+    --primary-foreground: 42 100% 94%;
 
-    --secondary: 222 33% 15%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 142 12% 59%;
+    --secondary-foreground: 42 100% 94%;
 
-    --muted: 222 33% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 95 20% 18%;
+    --muted-foreground: 42 24% 80%;
 
-    --accent: 160 50% 20%;
-    --accent-foreground: 160 84% 70%;
+    --accent: 142 12% 59%;
+    --accent-foreground: 42 100% 94%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 50% 30%;
-    --input: 222 33% 20%;
-    --ring: 160 84% 39%;
+    --border: 142 12% 45%;
+    --input: 95 20% 22%;
+    --ring: 142 12% 59%;
 
-    --accent-color: #10B981;
-    --text-body: #FFFFFF;
-    --card-bg: rgba(17, 24, 39, 0.8);
-    --card-border: #10B981;
+    --accent-color: #8BA194;
+    --text-body: #FFF7E2;
+    --card-bg: rgba(255, 247, 226, 0.05);
+    --card-border: rgba(139, 161, 148, 0.2);
     --page-bg: transparent;
   }
 }
@@ -111,36 +111,38 @@
   }
 
   .dark .elite-card {
-    background: rgba(17, 24, 39, 0.8);
-    border: 1px solid #10B981;
+    background: rgba(255, 247, 226, 0.05);
+    border: 1px solid rgba(139, 161, 148, 0.2);
   }
 
   .elite-card {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    background: #FFF7E2;
+    border: 1px solid #8BA194;
+    box-shadow: 0 4px 10px -1px rgb(79 99 61 / 0.16);
   }
 
   .dark .elite-nav {
-    background: rgba(17, 24, 39, 0.95);
-    border: 1px solid rgba(16, 185, 129, 0.4);
+    background: rgba(139, 161, 148, 0.1);
+    border: 1px solid rgba(139, 161, 148, 0.2);
   }
 
   .elite-nav {
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    background: rgba(255, 247, 226, 0.9);
+    border: 1px solid rgba(139, 161, 148, 0.45);
+    box-shadow: 0 4px 10px -1px rgb(79 99 61 / 0.16);
   }
 
   .btn-green {
-    background: linear-gradient(135deg, #34D399 0%, #10B981 50%, #059669 100%);
-    color: #0f172a;
+    background: #4F633D;
+    color: #FFF7E2;
     font-weight: 600;
   }
 
   .btn-green:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
+    background: #8BA194;
+    color: #FFF7E2;
+    box-shadow: 0 8px 18px rgba(79, 99, 61, 0.25);
   }
 
   .elite-card:hover {
@@ -148,18 +150,18 @@
   }
 
   .dark .elite-card:hover {
-    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.25);
   }
 
   .elite-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.16);
   }
 
   .dark .icon-adaptive {
-    color: #FFFFFF;
+    color: #FFF7E2;
   }
 
   .icon-adaptive {
-    color: #1E293B;
+    color: #4F633D;
   }
 }

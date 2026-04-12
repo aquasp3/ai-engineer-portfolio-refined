@@ -30,7 +30,7 @@ const FeaturedProjectSection = () => {
           <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary rounded-full border border-primary/30">
             Top Highlight
           </span>
-          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary rounded-full border border-primary/20">
+          <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#8BA194]/20 text-[#FFF7E2] rounded-full border border-[#8BA194]/40">
             GenAI
           </span>
         </div>
