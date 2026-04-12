@@ -58,7 +58,7 @@ const Index = () => {
               />
               <div
                 className="absolute inset-0"
-                style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.4))" }}
+                style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.78))" }}
               />
             </motion.div>
           )}
