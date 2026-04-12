@@ -1,4 +1,4 @@
-import { Github } from "lucide-react";
+import { Github, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import GlassSection from "./GlassSection";
 
@@ -36,7 +36,7 @@ const projects = [
 const ProjectsSection = () => {
   return (
     <GlassSection id="projects">
-      <h2 className="text-2xl font-bold mb-1 text-accent-green">Projects</h2>
+      <h2 className="text-2xl font-bold mb-1 text-primary">Projects</h2>
       <div className="w-12 h-1 bg-primary/50 mb-8 rounded-full" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         {projects.map((project, i) => (
@@ -46,7 +46,7 @@ const ProjectsSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1, duration: 0.3 }}
-            className="elite-card rounded-xl p-5 flex flex-col"
+            className="rounded-xl p-5 bg-white/5 backdrop-blur-lg border border-white/10 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(0,0,0,0.25)] flex flex-col h-full"
           >
             <h3 className="text-base font-semibold text-foreground mb-2">{project.title}</h3>
             <p className="text-xs uppercase tracking-wide text-primary/90 mb-2">Tech Stack</p>

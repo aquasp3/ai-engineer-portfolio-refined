@@ -17,18 +17,18 @@ const FEATURED_PROJECT = {
 const FeaturedProjectSection = () => {
   return (
     <GlassSection id="featured">
-      <h2 className="text-2xl font-bold mb-1 text-accent-green">Featured Project</h2>
+      <h2 className="text-2xl font-bold mb-1 text-primary">Featured Project</h2>
       <div className="w-12 h-1 bg-primary/50 mb-8 rounded-full" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="elite-card rounded-xl p-6 md:p-8 border-primary/60"
+        className="rounded-xl p-6 md:p-8 bg-white/5 backdrop-blur-lg border border-white/10 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(0,0,0,0.25)]"
       >
         <div className="flex items-center gap-2 mb-2">
           <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary rounded-full border border-primary/30">
-            Completed
+            Top Highlight
           </span>
           <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary rounded-full border border-primary/20">
             GenAI

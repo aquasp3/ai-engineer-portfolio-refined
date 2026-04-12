@@ -28,7 +28,7 @@ const HeroSection = () => {
         </motion.p>
         <motion.h1
           variants={item}
-          className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-accent-green leading-tight"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-white leading-tight max-w-3xl mx-auto"
         >
           Building AI systems using Machine Learning and Generative AI
         </motion.h1>
@@ -43,7 +43,7 @@ const HeroSection = () => {
             href="#projects"
             className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 btn-green rounded-full text-sm"
           >
-            <ArrowDown size={15} />
+            <ArrowDown size={16} />
             View Projects
           </motion.a>
           <motion.a
@@ -54,7 +54,7 @@ const HeroSection = () => {
             rel="noopener noreferrer"
             className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
           >
-            <Github size={15} />
+            <Github size={16} />
             GitHub
           </motion.a>
           <motion.a
@@ -65,7 +65,7 @@ const HeroSection = () => {
             rel="noopener noreferrer"
             className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
           >
-            <Linkedin size={15} />
+            <Linkedin size={16} />
             LinkedIn
           </motion.a>
           <motion.a
@@ -74,7 +74,7 @@ const HeroSection = () => {
             href="#contact"
             className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
           >
-            <Mail size={15} />
+            <Mail size={16} />
             Contact
           </motion.a>
         </motion.div>
@@ -86,7 +86,7 @@ const HeroSection = () => {
         transition={{ delay: 1, duration: 0.4 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
       >
-        <ChevronDown size={20} className="text-accent-green animate-bounce" />
+        <ChevronDown size={20} className="text-primary animate-bounce" />
       </motion.div>
     </section>
   );
