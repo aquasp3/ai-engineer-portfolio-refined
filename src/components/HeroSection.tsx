@@ -16,31 +16,32 @@ const item: Variants = {
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center">
+    <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6">
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative z-10 text-center px-6 max-w-3xl mx-auto"
+        className="relative z-10 text-center w-full max-w-3xl mx-auto"
       >
         <motion.p variants={item} className="text-sm text-accent-green font-semibold mb-6 tracking-[0.25em] uppercase font-sans">
-          Hi, I'm Sathvik Konduri
+          Hi, I&apos;m Sathvik Konduri
         </motion.p>
         <motion.h1
           variants={item}
           className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 text-accent-green leading-tight"
         >
-          Building AI Systems Using Machine Learning & Generative AI
+          Building AI systems using Machine Learning and Generative AI
         </motion.h1>
-        <motion.p variants={item} className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto leading-relaxed mb-12">
+        <motion.p variants={item} className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto leading-relaxed mb-10">
           AIML student with hands-on experience in ML, NLP, and LLM-powered applications.
         </motion.p>
-        <motion.div variants={item} className="flex flex-wrap items-center justify-center gap-3">
+
+        <motion.div variants={item} className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center justify-center gap-3">
           <motion.a
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             href="#projects"
-            className="inline-flex items-center justify-center gap-2 px-7 h-11 btn-green rounded-full text-sm"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 btn-green rounded-full text-sm"
           >
             <ArrowDown size={15} />
             View Projects
@@ -51,7 +52,7 @@ const HeroSection = () => {
             href="https://github.com/aquasp3"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
           >
             <Github size={15} />
             GitHub
@@ -62,7 +63,7 @@ const HeroSection = () => {
             href="https://linkedin.com/in/sathvikkonduri"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
           >
             <Linkedin size={15} />
             LinkedIn
@@ -71,7 +72,7 @@ const HeroSection = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             href="#contact"
-            className="inline-flex items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-7 h-11 elite-card rounded-full text-sm font-medium text-foreground"
           >
             <Mail size={15} />
             Contact
