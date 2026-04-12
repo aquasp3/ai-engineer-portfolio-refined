@@ -1,4 +1,3 @@
-import { ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import GlassSection from "./GlassSection";
 
@@ -6,13 +5,13 @@ const blogs = [
   {
     title: "LangChain: Chains, Agents, Memory",
     description:
-      "A deep dive into LangChain's core building blocks — how chains orchestrate LLM calls, agents make decisions dynamically, and memory enables context-aware conversations.",
+      "Built applications using chains, agents, and memory to understand LLM workflows.",
     link: "#",
   },
   {
-    title: "NLP Token Classification: NER, POS & Chunking",
+    title: "NLP Token Classification",
     description:
-      "Understanding token-level NLP tasks — Named Entity Recognition, Part-of-Speech tagging, and text chunking with transformer-based models.",
+      "Explained NER, POS tagging, and chunking in a simple way.",
     link: "#",
   },
 ];
@@ -20,31 +19,31 @@ const blogs = [
 const BlogsSection = () => {
   return (
     <GlassSection id="blogs">
-      <h2 className="text-2xl font-bold mb-1 text-accent-green">Blogs</h2>
+      <h2 className="text-2xl font-bold mb-1 text-primary">Blogs</h2>
       <div className="w-12 h-1 bg-primary/50 mb-8 rounded-full" />
-      <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
         {blogs.map((blog, i) => (
-          <motion.div
+          <motion.article
             key={blog.title}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1, duration: 0.3 }}
-            className="elite-card rounded-xl p-5 flex flex-col"
+            className="rounded-xl p-5 sm:p-6 bg-white/5 backdrop-blur-lg border border-white/10 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(0,0,0,0.25)] flex flex-col h-full"
           >
-            <h3 className="text-base font-semibold text-foreground mb-2">{blog.title}</h3>
-            <p className="text-sm text-muted-foreground mb-4 flex-1 leading-relaxed">
+            <h3 className="text-lg font-semibold text-white mb-2">{blog.title}</h3>
+            <p className="text-sm text-slate-200 mb-5 flex-1 leading-relaxed">
               {blog.description}
             </p>
             <a
               href={blog.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
             >
-              Read Blog <ExternalLink size={14} />
+              Read Blog →
             </a>
-          </motion.div>
+          </motion.article>
         ))}
       </div>
     </GlassSection>
