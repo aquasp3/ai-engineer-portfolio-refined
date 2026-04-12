@@ -29,7 +29,7 @@ const BlogsSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1, duration: 0.3 }}
-            className="rounded-xl p-5 sm:p-6 bg-white/5 backdrop-blur-lg border border-white/10 hover:-translate-y-1 hover:shadow-[0_16px_30px_rgba(0,0,0,0.25)] flex flex-col h-full"
+            className="elite-card rounded-xl p-5 sm:p-6 flex flex-col"
           >
             <h3 className="text-lg font-semibold text-white mb-2">{blog.title}</h3>
             <p className="text-sm text-slate-200 mb-5 flex-1 leading-relaxed">

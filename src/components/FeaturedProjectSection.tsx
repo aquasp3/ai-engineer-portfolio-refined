@@ -5,9 +5,9 @@ import GlassSection from "./GlassSection";
 const FEATURED_PROJECT = {
   title: "AI Resume Builder",
   description: [
-    "Built AI-powered resume generator using LLMs.",
-    "Designed prompt system for structured output.",
-    "Generates job-ready resumes from user input.",
+    "Built an AI-powered app that generates structured resumes using LLMs.",
+    "Designed prompts and formatting for real-world usability.",
+    "Generates clean, job-ready resumes from user input.",
   ],
   tech: ["LLMs", "Prompt Engineering", "Python", "React", "LangChain"],
   liveDemo: "#",
@@ -35,14 +35,14 @@ const FeaturedProjectSection = () => {
           </span>
         </div>
 
-        <h3 className="text-xl md:text-2xl font-bold text-white mb-3">{FEATURED_PROJECT.title}</h3>
-        <ul className="list-disc pl-5 space-y-1 text-slate-200 mb-5">
+        <h3 className="text-xl font-bold text-foreground mb-3">{FEATURED_PROJECT.title}</h3>
+        <ul className="list-disc pl-5 space-y-1 text-muted-foreground mb-5">
           {FEATURED_PROJECT.description.map((point) => (
             <li key={point}>{point}</li>
           ))}
         </ul>
 
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-5">
           {FEATURED_PROJECT.tech.map((tech) => (
             <span key={tech} className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full font-mono border border-primary/20">
               {tech}
@@ -55,7 +55,7 @@ const FeaturedProjectSection = () => {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
             href={FEATURED_PROJECT.liveDemo}
-            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-5 h-10 btn-green rounded-full text-sm"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-5 h-9 btn-green rounded-full text-xs"
           >
             <ExternalLink size={14} />
             Live Demo
@@ -66,7 +66,7 @@ const FeaturedProjectSection = () => {
             href={FEATURED_PROJECT.codeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-5 h-10 rounded-full text-sm font-medium text-white bg-white/10 backdrop-blur-md border border-white/20"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-5 h-9 elite-card rounded-full text-xs font-medium text-foreground"
           >
             <Github size={14} />
             View Code
