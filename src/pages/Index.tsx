@@ -21,12 +21,14 @@ const Index = () => {
   const handleLoadComplete = useCallback(() => setLoading(false), []);
 
   useEffect(() => {
-    // Set dark mode by default
-    document.documentElement.classList.add("dark");
+    const savedTheme = localStorage.getItem("theme");
+    const shouldUseDark = savedTheme ? savedTheme === "dark" : true;
+    document.documentElement.classList.toggle("dark", shouldUseDark);
 
     const checkTheme = () => {
       setIsDark(document.documentElement.classList.contains("dark"));
     };
+
     checkTheme();
 
     const observer = new MutationObserver(checkTheme);
@@ -34,6 +36,7 @@ const Index = () => {
       attributes: true,
       attributeFilter: ["class"],
     });
+
     return () => observer.disconnect();
   }, []);
 
@@ -41,7 +44,6 @@ const Index = () => {
     <>
       {loading && <LoadingScreen onComplete={handleLoadComplete} />}
 
-      {/* Background Layer */}
       <div className="fixed inset-0 -z-10">
         <AnimatePresence>
           {isDark && (
@@ -71,13 +73,12 @@ const Index = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="absolute inset-0"
-              style={{ backgroundColor: "#F8FAFC" }}
+              style={{ backgroundColor: "#FFF7E2" }}
             />
           )}
         </AnimatePresence>
       </div>
 
-      {/* Main Content */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
