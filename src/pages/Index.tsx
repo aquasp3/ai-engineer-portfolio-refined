@@ -54,8 +54,14 @@ const Index = () => {
               transition={{ duration: 0.3 }}
               className="absolute inset-0"
             >
-              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${heroBg})` }} />
-              <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.8), rgba(0,0,0,0.8))" }} />
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url(${heroBg})` }}
+              />
+              <div
+                className="absolute inset-0"
+                style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.78))" }}
+              />
             </motion.div>
           )}
         </AnimatePresence>

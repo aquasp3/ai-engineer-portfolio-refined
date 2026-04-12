@@ -6,58 +6,80 @@
 
 @layer base {
   :root {
-    --bg: #FFF7E2;
-    --text: #1A1A1A;
-    --primary-color: #4F633D;
-    --secondary-color: #8BA194;
-
     --background: 42 100% 94%;
-    --foreground: 0 0% 10%;
+    --foreground: 95 24% 20%;
+
     --card: 42 100% 96%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 95 24% 20%;
+
     --popover: 42 100% 96%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 95 24% 20%;
+
     --primary: 91 23% 32%;
     --primary-foreground: 42 100% 94%;
+
     --secondary: 142 12% 59%;
-    --secondary-foreground: 0 0% 10%;
+    --secondary-foreground: 95 24% 20%;
+
     --muted: 42 60% 90%;
-    --muted-foreground: 0 0% 35%;
+    --muted-foreground: 142 8% 45%;
+
     --accent: 142 12% 59%;
     --accent-foreground: 42 100% 94%;
+
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
+
     --border: 142 12% 70%;
     --input: 142 12% 70%;
     --ring: 91 23% 32%;
+
     --radius: 0.75rem;
+
+    --accent-color: #8BA194;
+    --text-body: #4F633D;
+    --card-bg: #FFF7E2;
+    --card-border: #8BA194;
+    --page-bg: #FFF7E2;
+
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
   }
 
   .dark {
-    --bg: #0F1411;
-    --text: #FFF7E2;
-    --primary-color: #4F633D;
-    --secondary-color: #8BA194;
-
-    --background: 137 19% 7%;
+    --background: 95 24% 9%;
     --foreground: 42 100% 94%;
-    --card: 137 19% 10%;
+
+    --card: 95 24% 12%;
     --card-foreground: 42 100% 94%;
-    --popover: 137 19% 10%;
+
+    --popover: 95 24% 12%;
     --popover-foreground: 42 100% 94%;
+
     --primary: 91 23% 32%;
     --primary-foreground: 42 100% 94%;
+
     --secondary: 142 12% 59%;
     --secondary-foreground: 42 100% 94%;
-    --muted: 137 12% 18%;
+
+    --muted: 95 20% 18%;
     --muted-foreground: 42 24% 80%;
+
     --accent: 142 12% 59%;
     --accent-foreground: 42 100% 94%;
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
+
     --border: 142 12% 45%;
-    --input: 137 12% 22%;
+    --input: 95 20% 22%;
     --ring: 142 12% 59%;
+
+    --accent-color: #8BA194;
+    --text-body: #FFF7E2;
+    --card-bg: rgba(255, 247, 226, 0.05);
+    --card-border: rgba(139, 161, 148, 0.2);
+    --page-bg: transparent;
   }
 }
 
@@ -81,27 +103,66 @@
 }
 
 @layer utilities {
-  .elite-card {
+  .text-accent-green {
+    color: var(--accent-color);
+  }
+
+  .green-gradient-text {
+    color: var(--accent-color);
+  }
+
+  .dark .elite-card {
     background: rgba(255, 247, 226, 0.05);
-    backdrop-filter: blur(16px);
     border: 1px solid rgba(139, 161, 148, 0.2);
-    border-radius: 0.75rem;
+  }
+
+  .elite-card {
+    background: #FFF7E2;
+    border: 1px solid #8BA194;
+    box-shadow: 0 4px 10px -1px rgb(79 99 61 / 0.16);
+  }
+
+  .dark .elite-nav {
+    background: rgba(139, 161, 148, 0.1);
+    border: 1px solid rgba(139, 161, 148, 0.2);
   }
 
   .elite-nav {
-    background: rgba(139, 161, 148, 0.1);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(139, 161, 148, 0.2);
+    background: rgba(255, 247, 226, 0.9);
+    border: 1px solid rgba(139, 161, 148, 0.45);
+    box-shadow: 0 4px 10px -1px rgb(79 99 61 / 0.16);
   }
 
   .btn-green {
-    background: var(--primary-color);
+    background: #4F633D;
     color: #FFF7E2;
     font-weight: 600;
   }
 
   .btn-green:hover {
     transform: translateY(-1px);
+    background: #8BA194;
+    color: #FFF7E2;
     box-shadow: 0 8px 18px rgba(79, 99, 61, 0.25);
+  }
+
+  .elite-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .dark .elite-card:hover {
+    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.25);
+  }
+
+  .elite-card:hover {
+    box-shadow: 0 10px 24px rgba(79, 99, 61, 0.16);
+  }
+
+  .dark .icon-adaptive {
+    color: #FFF7E2;
+  }
+
+  .icon-adaptive {
+    color: #4F633D;
   }
 }
