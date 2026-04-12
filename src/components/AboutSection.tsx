@@ -11,16 +11,16 @@ const AboutSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="elite-card rounded-xl p-6 md:p-8"
+        className="elite-card rounded-xl p-6 md:p-8 space-y-4"
       >
-        <p className="text-muted-foreground leading-relaxed mb-4">
-          I'm Sathvik Konduri, an engineering student passionate about Artificial Intelligence and Machine Learning.
-          I focus on building practical ML solutions — from NLP pipelines and classification models to real-world
-          automation systems.
+        <p className="text-muted-foreground leading-relaxed">
+          I'm an AI/ML engineering student with a strong foundation in <span className="text-foreground font-medium">Machine Learning</span>, <span className="text-foreground font-medium">Natural Language Processing</span>, and <span className="text-foreground font-medium">Generative AI</span>. My work focuses on building practical, deployable AI solutions — from classification pipelines to LLM-powered applications.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          My interests span deep learning, natural language processing, and data-driven problem solving.
-          I enjoy turning complex datasets into actionable insights and building tools that make a real impact.
+          I've built an <span className="text-foreground font-medium">AI Resume Builder</span> using LLMs that generates structured, job-ready resumes from user input. I also have hands-on experience with <span className="text-foreground font-medium">LangChain</span> — working with chains, agents, and memory to build context-aware AI applications.
+        </p>
+        <p className="text-muted-foreground leading-relaxed">
+          I'm driven by building real-world AI tools that solve genuine problems, with measurable results and clean engineering practices.
         </p>
       </motion.div>
     </GlassSection>

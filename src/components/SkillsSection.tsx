@@ -3,20 +3,20 @@ import GlassSection from "./GlassSection";
 
 const skillCategories = [
   {
-    title: "Languages",
-    skills: ["Python", "C++", "JavaScript", "SQL"],
+    title: "AI / ML",
+    skills: ["Supervised Learning", "Regression", "Classification", "Feature Engineering", "Model Evaluation"],
   },
   {
-    title: "ML / AI",
-    skills: ["Scikit-Learn", "TensorFlow", "PyTorch", "LangChain", "Hugging Face"],
+    title: "NLP",
+    skills: ["Text Preprocessing", "TF-IDF", "Token Classification", "NER", "POS Tagging"],
   },
   {
-    title: "Data & Tools",
-    skills: ["Pandas", "NumPy", "Matplotlib", "Jupyter", "Git"],
+    title: "Generative AI",
+    skills: ["LangChain (Chains, Agents, Memory)", "LLM Applications", "Prompt Engineering"],
   },
   {
-    title: "Web & Cloud",
-    skills: ["React", "Tailwind CSS", "Node.js", "Firebase"],
+    title: "Tools & Frameworks",
+    skills: ["Python", "Pandas", "NumPy", "Scikit-learn", "TensorFlow", "Git", "GitHub"],
   },
 ];
 

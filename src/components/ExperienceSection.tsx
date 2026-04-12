@@ -3,16 +3,16 @@ import GlassSection from "./GlassSection";
 
 const experiences = [
   {
-    role: "ML Research Intern",
-    company: "Research Lab",
+    role: "Machine Learning Intern",
+    company: "Industry Experience",
     period: "2024",
-    description: "Worked on NLP-based text classification models and contributed to building a data pipeline for preprocessing large-scale datasets.",
+    description: "Improved model accuracy by 12% through feature engineering and hyperparameter optimization. Worked on classification and regression problems with real-world datasets.",
   },
   {
-    role: "Open Source Contributor",
-    company: "GitHub Projects",
-    period: "2023 – Present",
-    description: "Contributed to open-source ML libraries and tools. Focused on improving documentation and adding utility functions.",
+    role: "AI-ML Virtual Intern",
+    company: "Virtual Internship Program",
+    period: "2023",
+    description: "Built and evaluated ML models using TensorFlow and Jupyter. Gained hands-on experience with supervised learning workflows, data preprocessing, and model evaluation.",
   },
 ];
 
