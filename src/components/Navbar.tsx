@@ -46,14 +46,17 @@ const Navbar = () => {
           <span
             className="inline-flex h-12 w-12 items-center justify-center rounded-xl font-extrabold"
             style={{
-              backgroundColor: "#4F633D",
-              color: "#FFF7E2",
-              boxShadow: "0 0 12px rgba(79, 99, 61, 0.4)",
+              background: "var(--accent-color)",
+              color: "var(--page-bg)",
+              boxShadow: "0 0 12px rgba(79, 99, 61, 0.3)",
             }}
           >
             SK
           </span>
-          <span className="hidden sm:block text-sm font-semibold text-[var(--text-body)]">
+          <span
+            className="hidden sm:block text-sm font-semibold"
+            style={{ color: "var(--text-body)" }}
+          >
             Sathvik Konduri
           </span>
         </a>
@@ -64,7 +67,14 @@ const Navbar = () => {
             <a
               key={link.label}
               href={link.href}
-              className="text-sm text-[var(--text-body)] hover:text-[#8BA194] transition-colors"
+              className="text-sm transition-colors"
+              style={{ color: "var(--text-body)" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--secondary-color)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--text-body)";
+              }}
             >
               {link.label}
             </a>
@@ -75,20 +85,43 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-3">
 
           {/* SOCIAL */}
-          <a href="https://github.com/aquasp3" target="_blank" rel="noopener noreferrer" className="icon-adaptive">
+          <a
+            href="https://github.com/aquasp3"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="icon-adaptive"
+          >
             <Github size={18} />
           </a>
-          <a href="https://linkedin.com/in/sathvikkonduri" target="_blank" rel="noopener noreferrer" className="icon-adaptive">
+          <a
+            href="https://linkedin.com/in/sathvikkonduri"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="icon-adaptive"
+          >
             <Linkedin size={18} />
           </a>
-          <a href="mailto:sathvik.konduri@example.com" className="icon-adaptive">
+          <a
+            href="mailto:sathvik.konduri@example.com"
+            className="icon-adaptive"
+          >
             <Mail size={18} />
           </a>
 
-          {/* THEME TOGGLE 🔥 */}
+          {/* THEME TOGGLE */}
           <button
             onClick={handleThemeToggle}
-            className="ml-2 p-2 rounded-lg border border-[var(--card-border)] hover:bg-[var(--card-bg)] transition"
+            className="ml-2 p-2 rounded-lg transition"
+            style={{
+              border: "1px solid var(--border-color)",
+              color: "var(--text-body)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--card-bg)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+            }}
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
@@ -97,7 +130,8 @@ const Navbar = () => {
         {/* MOBILE MENU BUTTON */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-[var(--text-body)]"
+          className="md:hidden"
+          style={{ color: "var(--text-body)" }}
         >
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -117,13 +151,23 @@ const Navbar = () => {
                 key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="block py-2 text-sm text-[var(--text-body)] hover:text-[#8BA194]"
+                className="block py-2 text-sm transition-colors"
+                style={{ color: "var(--text-body)" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "var(--secondary-color)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "var(--text-body)";
+                }}
               >
                 {link.label}
               </a>
             ))}
 
-            <div className="flex gap-4 pt-3 mt-2 border-t border-[var(--card-border)]">
+            <div
+              className="flex gap-4 pt-3 mt-2"
+              style={{ borderTop: "1px solid var(--border-color)" }}
+            >
               <Github className="icon-adaptive" size={18} />
               <Linkedin className="icon-adaptive" size={18} />
               <Mail className="icon-adaptive" size={18} />
