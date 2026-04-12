@@ -8,7 +8,10 @@ interface GlassSectionProps {
 
 const GlassSection = ({ children, id, className = "" }: GlassSectionProps) => {
   return (
-    <section id={id} className={`py-16 md:py-24 px-4 sm:px-6 max-w-5xl mx-auto ${className}`}>
+    <section
+      id={id}
+      className={`relative w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-16 md:py-24 ${className}`}
+    >
       {children}
     </section>
   );
