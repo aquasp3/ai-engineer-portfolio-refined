@@ -2,6 +2,18 @@ import { Github, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import GlassSection from "./GlassSection";
 
+const FEATURED_PROJECT = {
+  title: "AI Resume Builder",
+  description: [
+    "Built an AI-powered app that generates structured resumes using LLMs.",
+    "Designed prompts and formatting for real-world usability.",
+    "Generates clean, job-ready resumes from user input.",
+  ],
+  tech: ["LLMs", "Prompt Engineering", "Python", "React", "LangChain"],
+  liveDemo: "#",
+  codeUrl: "https://github.com/aquasp3",
+};
+
 const FeaturedProjectSection = () => {
   return (
     <GlassSection id="featured">
@@ -22,26 +34,28 @@ const FeaturedProjectSection = () => {
             GenAI
           </span>
         </div>
-        <h3 className="text-xl font-bold text-foreground mb-3">AI Resume Builder</h3>
-        <p className="text-muted-foreground leading-relaxed mb-2">
-          Built a mobile/web application that generates structured, job-ready resumes using Large Language Models. Implemented prompt design and output formatting for real-world usability.
-        </p>
-        <p className="text-muted-foreground leading-relaxed mb-5 text-sm">
-          Focused on generating clean, professional resumes from minimal user input — demonstrating practical LLM application development.
-        </p>
+
+        <h3 className="text-xl font-bold text-foreground mb-3">{FEATURED_PROJECT.title}</h3>
+        <ul className="list-disc pl-5 space-y-1 text-muted-foreground mb-5">
+          {FEATURED_PROJECT.description.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+        </ul>
+
         <div className="flex flex-wrap gap-2 mb-5">
-          {["LLMs", "Prompt Engineering", "Python", "React", "LangChain"].map((t) => (
-            <span key={t} className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full font-mono border border-primary/20">
-              {t}
+          {FEATURED_PROJECT.tech.map((tech) => (
+            <span key={tech} className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-full font-mono border border-primary/20">
+              {tech}
             </span>
           ))}
         </div>
-        <div className="flex gap-3">
+
+        <div className="flex flex-col sm:flex-row gap-3">
           <motion.a
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            href="#"
-            className="inline-flex items-center gap-2 px-5 h-9 btn-green rounded-full text-xs"
+            href={FEATURED_PROJECT.liveDemo}
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-5 h-9 btn-green rounded-full text-xs"
           >
             <ExternalLink size={14} />
             Live Demo
@@ -49,10 +63,10 @@ const FeaturedProjectSection = () => {
           <motion.a
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            href="https://github.com/aquasp3"
+            href={FEATURED_PROJECT.codeUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 h-9 elite-card rounded-full text-xs font-medium text-foreground"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-5 h-9 elite-card rounded-full text-xs font-medium text-foreground"
           >
             <Github size={14} />
             View Code
