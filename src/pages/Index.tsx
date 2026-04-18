@@ -60,7 +60,7 @@ const Index = () => {
               />
               <div
                 className="absolute inset-0"
-                style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.78))" }}
+                style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.95))" }}
               />
             </motion.div>
           )}
@@ -73,7 +73,7 @@ const Index = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
               className="absolute inset-0"
-              style={{ backgroundColor: "#FFF7E2" }}
+              style={{ backgroundColor: "var(--page-bg)" }}
             />
           )}
         </AnimatePresence>

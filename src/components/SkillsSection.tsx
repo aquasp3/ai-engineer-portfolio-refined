@@ -43,8 +43,9 @@ const SkillsSection = () => {
             key={cat.title}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            whileHover={{ y: -4, scale: 1.01 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.1, duration: 0.3 }}
+            transition={{ delay: i * 0.1, duration: 0.35, ease: "easeOut" }}
             className="elite-card p-5"
           >
             {/* CATEGORY TITLE */}
@@ -62,9 +63,9 @@ const SkillsSection = () => {
                   key={skill}
                   className="px-3 py-1 text-xs rounded-full font-mono border"
                   style={{
-                    background: "rgba(79, 99, 61, 0.1)",
+                    background: "transparent",
                     color: "var(--accent-color)",
-                    borderColor: "rgba(79, 99, 61, 0.2)",
+                    borderColor: "var(--border-color)",
                   }}
                 >
                   {skill}
