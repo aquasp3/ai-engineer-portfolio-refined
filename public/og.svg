@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#F4F2EC"/>
+  <path d="M0 0h1200v630H0z" fill="none" stroke="#181818" stroke-width="8"/>
+  <circle cx="92" cy="92" r="20" fill="#E12D26"/>
+  <text x="92" y="300" fill="#181818" font-family="Arial, sans-serif" font-size="82" font-weight="800">Sathvik</text>
+  <text x="92" y="390" fill="#E12D26" font-family="Arial, sans-serif" font-size="82" font-weight="800">Konduri.</text>
+  <text x="96" y="470" fill="#5C5B57" font-family="monospace" font-size="24">AI / ML ENGINEER IN TRAINING</text>
+  <path d="M800 120c80-55 150 55 230 0s150 55 230 0" fill="none" stroke="#E12D26" stroke-width="4"/>
+</svg>
