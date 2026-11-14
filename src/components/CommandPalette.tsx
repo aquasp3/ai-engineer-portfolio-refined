@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Copy, Download, Github, Linkedin, Map, Search, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { contact } from "@/data/portfolio";
@@ -25,46 +25,45 @@ const CommandPalette = () => {
   const isApple = typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isTouch = typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
 
-  const close = () => {
+  const close = useCallback(() => {
     setOpen(false);
     setQuery("");
     setFeedback("");
     window.setTimeout(() => restoreFocusRef.current?.focus(), 0);
-  };
-  const openPalette = () => {
+  }, []);
+  const openPalette = useCallback(() => {
     restoreFocusRef.current = document.activeElement as HTMLElement | null;
     setOpen(true);
-  };
-
-  const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(contact.email);
-    } catch {
-      const textarea = document.createElement("textarea");
-      textarea.value = contact.email;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      textarea.remove();
-    }
-    setFeedback("copied");
-    window.setTimeout(() => setFeedback(""), 1200);
-    window.setTimeout(() => inputRef.current?.focus(), 600);
-  };
-  const downloadResume = () => {
-    setFeedback("downloading...");
-    const link = document.createElement("a");
-    link.href = contact.resume;
-    link.download = "Sathvik-Konduri-Resume.pdf";
-    link.click();
-    window.setTimeout(close, 250);
-  };
-  const openExternal = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer");
-    close();
-  };
+  }, []);
 
   const items = useMemo<PaletteItem[]>(() => {
+    const copyEmail = async () => {
+      try {
+        await navigator.clipboard.writeText(contact.email);
+      } catch {
+        const textarea = document.createElement("textarea");
+        textarea.value = contact.email;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+      }
+      setFeedback("copied");
+      window.setTimeout(() => setFeedback(""), 1200);
+      window.setTimeout(() => inputRef.current?.focus(), 600);
+    };
+    const downloadResume = () => {
+      setFeedback("downloading...");
+      const link = document.createElement("a");
+      link.href = contact.resume;
+      link.download = "Sathvik-Konduri-Resume.pdf";
+      link.click();
+      window.setTimeout(close, 250);
+    };
+    const openExternal = (url: string) => {
+      window.open(url, "_blank", "noopener,noreferrer");
+      close();
+    };
     const navigateItem = (target: IntentTarget, icon = Map): PaletteItem => ({
       id: `navigate-${target}`,
       group: "NAVIGATE",
@@ -83,7 +82,7 @@ const CommandPalette = () => {
       { id: "open-linkedin", group: "ACTIONS", label: "open_linkedin()", keywords: ["linkedin", "profile", "network"], icon: Linkedin, run: () => openExternal(contact.linkedin) },
       { id: "open-medium", group: "ACTIONS", label: "open_medium()", keywords: ["medium", "blog", "writing"], icon: Search, run: () => openExternal(contact.medium) },
     ];
-  }, [navigate]);
+  }, [close, navigate]);
 
   const filtered = useMemo(() => {
     const value = query.trim().toLowerCase();
@@ -94,14 +93,18 @@ const CommandPalette = () => {
 
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); open ? close() : openPalette(); }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (open) close();
+        else openPalette();
+      }
       if (event.key === "Escape" && open) { event.preventDefault(); close(); }
     };
     const eventOpen = () => openPalette();
     window.addEventListener("keydown", key);
     window.addEventListener("open-command-palette", eventOpen);
     return () => { window.removeEventListener("keydown", key); window.removeEventListener("open-command-palette", eventOpen); };
-  }, [open]);
+  }, [close, open, openPalette]);
 
   useEffect(() => {
     if (open) { inputRef.current?.focus(); setActive(0); }
