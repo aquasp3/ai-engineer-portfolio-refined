@@ -1,27 +1,24 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import type { ReactNode } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import EmbeddingSpaceCanvas from "@/components/EmbeddingSpaceCanvas";
+import CommandPalette from "@/components/CommandPalette";
+import HomePage from "@/pages/HomePage";
+import ProjectsPage from "@/pages/ProjectsPage";
+import ExperiencePage from "@/pages/ExperiencePage";
+import SkillsPage from "@/pages/SkillsPage";
+import BlogsPage from "@/pages/BlogsPage";
+import ContactPage from "@/pages/ContactPage";
+import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
-
+const Page = ({ children }: { children: ReactNode }) => <motion.main initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }} transition={{ duration: 0.22, ease: "easeOut" }}>{children}</motion.main>;
+const RoutedApp = () => { const location = useLocation(); return <div className="relative min-h-screen overflow-x-hidden bg-[var(--page-bg)] text-[var(--ink)]"><EmbeddingSpaceCanvas /><div className="relative z-10"><Navbar /><AnimatePresence mode="wait"><Routes location={location} key={location.pathname}><Route path="/" element={<Page><HomePage /></Page>} /><Route path="/projects" element={<Page><ProjectsPage /></Page>} /><Route path="/experience" element={<Page><ExperiencePage /></Page>} /><Route path="/skills" element={<Page><SkillsPage /></Page>} /><Route path="/blogs" element={<Page><BlogsPage /></Page>} /><Route path="/contact" element={<Page><ContactPage /></Page>} /><Route path="*" element={<Page><NotFound /></Page>} /></Routes></AnimatePresence><Footer /></div><CommandPalette /></div>; };
+const App = () => <QueryClientProvider client={queryClient}><TooltipProvider><Toaster /><Sonner /><BrowserRouter><RoutedApp /></BrowserRouter></TooltipProvider></QueryClientProvider>;
 export default App;
