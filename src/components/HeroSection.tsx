@@ -12,20 +12,20 @@ const pagePaths = { projects: "/projects", experience: "/experience", skills: "/
 
 const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
   const rootRef = useRef<HTMLDivElement>(null);
-  const eyesRef = useRef<SVGGElement>(null);
+  const eyeRef = useRef<SVGGElement>(null);
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   const visible = useRef(true);
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const [blink, setBlink] = useState(false);
-  const [manualJump, setManualJump] = useState(false);
+  const [pulseKey, setPulseKey] = useState(0);
 
   useEffect(() => {
     const root = rootRef.current;
     if (!root || reduced) return;
     const move = (event: MouseEvent) => {
-      target.current.x = Math.max(-12, Math.min(12, ((event.clientX / window.innerWidth) - 0.5) * 24));
-      target.current.y = Math.max(-8, Math.min(8, ((event.clientY / window.innerHeight) - 0.5) * -16));
+      target.current.x = Math.max(-14, Math.min(14, ((event.clientX / window.innerWidth) - 0.5) * 28));
+      target.current.y = Math.max(-10, Math.min(10, ((event.clientY / window.innerHeight) - 0.5) * -20));
     };
     const recenter = () => { target.current = { x: 0, y: 0 }; };
     const observer = "IntersectionObserver" in window
@@ -36,10 +36,10 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
       if (visible.current && !document.hidden) {
         current.current.x += (target.current.x - current.current.x) * 0.12;
         current.current.y += (target.current.y - current.current.y) * 0.12;
-        root.style.transform = `perspective(700px) rotateX(${current.current.y}deg) rotateY(${current.current.x}deg)`;
-        const glanceX = state === "thinking" ? 2 : Math.max(-2, Math.min(2, current.current.x / 5));
-        const glanceY = state === "thinking" ? -2 : Math.max(-2, Math.min(2, current.current.y / 4));
-        eyesRef.current?.style.setProperty("transform", `translate3d(${glanceX}px, ${glanceY}px, 0)`);
+        root.style.transform = `perspective(750px) rotateX(${current.current.y}deg) rotateY(${current.current.x}deg)`;
+        const glanceX = state === "thinking" ? 5 : Math.max(-6, Math.min(6, current.current.x / 2.2));
+        const glanceY = state === "thinking" ? -3 : Math.max(-5, Math.min(5, current.current.y / 2.2));
+        eyeRef.current?.style.setProperty("transform", `translate3d(${glanceX}px, ${glanceY}px, 0)`);
       }
       frame = requestAnimationFrame(animate);
     };
@@ -47,315 +47,236 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
     window.addEventListener("mousemove", move);
     window.addEventListener("mouseleave", recenter);
     frame = requestAnimationFrame(animate);
-    return () => { cancelAnimationFrame(frame); observer?.disconnect(); window.removeEventListener("mousemove", move); window.removeEventListener("mouseleave", recenter); };
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseleave", recenter);
+    };
   }, [reduced, state]);
 
   useEffect(() => {
     if (reduced) return;
-    const timer = window.setInterval(() => { setBlink(true); window.setTimeout(() => setBlink(false), 130); }, 3800);
+    const timer = window.setInterval(() => {
+      setBlink(true);
+      window.setTimeout(() => setBlink(false), 140);
+    }, 3600);
     return () => window.clearInterval(timer);
   }, [reduced]);
 
-  const triggerJump = () => {
-    if (reduced || manualJump) return;
-    setManualJump(true);
-    window.setTimeout(() => setManualJump(false), 520);
-  };
-
-  const isTurbo = state === "thinking" || state === "routing";
-  const isFast = isTurbo || state === "listening";
+  const isBusy = state === "thinking" || state === "routing";
   const isSleepy = state === "sleepy";
-  const isJumping = state === "happy" || manualJump;
-  const beaconColor =
+  const coreColor =
     state === "happy" || state === "listening"
       ? "#22C55E"
-      : state === "sleepy"
-        ? "#737373"
+      : isSleepy
+        ? "#6B6A65"
         : "#E12D26";
 
-  const stepDuration = isTurbo ? "0.16s" : isFast ? "0.22s" : "0.32s";
-  const worldDuration = isTurbo ? "1.1s" : isFast ? "1.6s" : "2.6s";
+  const triggerScan = () => {
+    if (!reduced) setPulseKey((k) => k + 1);
+  };
 
   return (
     <div
       ref={rootRef}
-      onClick={triggerJump}
-      onMouseEnter={triggerJump}
+      onClick={triggerScan}
+      onMouseEnter={triggerScan}
       aria-hidden="true"
-      className="group order-2 relative mx-auto w-[65%] max-w-[230px] cursor-pointer select-none transition-transform duration-200 lg:order-1 lg:w-full lg:max-w-[280px]"
+      className="group order-2 relative mx-auto w-[65%] max-w-[235px] cursor-pointer select-none transition-transform duration-200 lg:order-1 lg:w-full lg:max-w-[280px]"
     >
       <style>{`
-        @keyframes dinoHurdle {
-          0%, 58%, 100% { transform: translateY(0px); }
-          72% { transform: translateY(-34px); }
-          84% { transform: translateY(-28px); }
-        }
-        @keyframes dinoManualJump {
+        @keyframes aiHover {
           0%, 100% { transform: translateY(0px); }
-          45% { transform: translateY(-38px); }
+          50% { transform: translateY(-7px); }
         }
-        @keyframes dinoSprintBob {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-4px); }
+        @keyframes aiOrbitCW {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
-        @keyframes dinoStumble {
-          0%, 100% { transform: rotate(0deg) translateX(0px); }
-          25% { transform: rotate(-6deg) translateX(-3px); }
-          75% { transform: rotate(6deg) translateX(3px); }
+        @keyframes aiOrbitCCW {
+          0% { transform: rotate(360deg); }
+          100% { transform: rotate(0deg); }
         }
-        @keyframes dinoStepA {
-          0%, 49% { opacity: 1; }
-          50%, 100% { opacity: 0; }
+        @keyframes aiScanWave {
+          0% { r: 34; opacity: 0.85; stroke-width: 3; }
+          100% { r: 96; opacity: 0; stroke-width: 1; }
         }
-        @keyframes dinoStepB {
-          0%, 49% { opacity: 0; }
-          50%, 100% { opacity: 1; }
+        @keyframes aiEqBar {
+          0%, 100% { transform: scaleY(0.35); }
+          50% { transform: scaleY(1); }
         }
-        @keyframes dinoGround {
-          0% { stroke-dashoffset: 0; }
-          100% { stroke-dashoffset: 48; }
-        }
-        @keyframes dinoObstacle {
-          0% { transform: translateX(170px); opacity: 0; }
-          10% { opacity: 1; }
-          88% { opacity: 1; }
-          100% { transform: translateX(-110px); opacity: 0; }
-        }
-        @keyframes dinoCloud {
-          0% { transform: translateX(140px); }
-          100% { transform: translateX(-140px); }
-        }
-        @keyframes dinoBird {
-          0% { transform: translate(160px, 0px); opacity: 0; }
-          12% { opacity: 1; }
-          50% { transform: translate(20px, -6px); }
-          88% { opacity: 1; }
-          100% { transform: translate(-120px, 2px); opacity: 0; }
-        }
-        @keyframes dinoTailWag {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-3px); }
-        }
-        @keyframes dinoZzz {
+        @keyframes aiZzz {
           0% { opacity: 0; transform: translate(0, 4px); }
           50% { opacity: 1; }
           100% { opacity: 0; transform: translate(10px, -16px); }
         }
-        @keyframes speedStreak {
-          0% { transform: translateX(20px); opacity: 0; }
-          40% { opacity: 0.9; }
-          100% { transform: translateX(-45px); opacity: 0; }
-        }
       `}</style>
 
-      <svg
-        viewBox="0 0 260 220"
-        shapeRendering="crispEdges"
-        className="w-full overflow-hidden transition-transform duration-200 group-hover:scale-105"
-      >
-        {/* Drifting Pixel Clouds */}
+      <svg viewBox="0 0 260 250" className="w-full overflow-visible transition-transform duration-200 group-hover:scale-105">
+        {pulseKey > 0 && !reduced && (
+          <circle
+            key={pulseKey}
+            cx="130"
+            cy="122"
+            r="34"
+            fill="none"
+            stroke={coreColor}
+            style={{ animation: "aiScanWave 0.75s cubic-bezier(.22,1,.36,1) forwards" }}
+          />
+        )}
+
         <g
-          fill="var(--ink)"
-          opacity="0.16"
-          style={{ animation: reduced || isSleepy ? "none" : "dinoCloud 9s linear infinite" }}
+          style={{
+            transformOrigin: "130px 122px",
+            animation: reduced || isSleepy ? "none" : `aiOrbitCW ${isBusy ? "3s" : "18s"} linear infinite`,
+          }}
         >
-          <rect x="40" y="32" width="32" height="4" />
-          <rect x="48" y="28" width="16" height="4" />
-          <rect x="160" y="46" width="36" height="4" />
-          <rect x="170" y="42" width="18" height="4" />
+          <circle
+            cx="130"
+            cy="122"
+            r="84"
+            fill="none"
+            stroke="var(--ink)"
+            strokeWidth="1.5"
+            strokeDasharray="6 10 2 10"
+            opacity="0.35"
+          />
+          <circle cx="130" cy="38" r="4.5" fill={coreColor} stroke="var(--ink)" strokeWidth="2" />
+          <circle cx="214" cy="122" r="4" fill="var(--surface)" stroke="var(--ink)" strokeWidth="2" />
+          <circle cx="130" cy="206" r="4.5" fill={coreColor} stroke="var(--ink)" strokeWidth="2" />
+          <circle cx="46" cy="122" r="4" fill="var(--surface)" stroke="var(--ink)" strokeWidth="2" />
         </g>
 
-        {/* Flying Pixel Pterodactyl */}
-        {!isSleepy && (
-          <g
-            fill="var(--ink)"
-            opacity="0.75"
-            style={{ animation: reduced ? "none" : "dinoBird 5.4s linear 1.2s infinite" }}
-          >
-            {/* Bird Body & Beak */}
-            <rect x="92" y="72" width="16" height="6" />
-            <rect x="86" y="74" width="6" height="4" />
-            <rect x="108" y="70" width="8" height="4" />
-            {/* Flapping Wing Frame A */}
-            <g style={{ animation: reduced ? "none" : "dinoStepA 0.35s infinite" }}>
-              <rect x="96" y="62" width="6" height="10" />
-              <rect x="98" y="58" width="4" height="4" />
-            </g>
-            {/* Flapping Wing Frame B */}
-            <g style={{ animation: reduced ? "none" : "dinoStepB 0.35s infinite" }}>
-              <rect x="96" y="78" width="6" height="8" />
-              <rect x="98" y="86" width="4" height="4" />
-            </g>
-          </g>
-        )}
-
-        {/* Ground Horizon & Scrolling Pebbles */}
-        <line x1="8" y1="176" x2="252" y2="176" stroke="var(--ink)" strokeWidth="3" />
-        <line
-          x1="12"
-          y1="184"
-          x2="248"
-          y2="184"
-          stroke="var(--ink)"
-          strokeWidth="3"
-          strokeDasharray="4 10 8 12"
-          style={{
-            animation: reduced || isSleepy ? "none" : `dinoGround ${isTurbo ? "0.22s" : isFast ? "0.35s" : "0.55s"} linear infinite`,
-          }}
-        />
-
-        {/* Scrolling Pixel Cactus Hurdle */}
-        {!isSleepy && (
-          <g
-            fill="var(--ink)"
-            style={{
-              animation: reduced ? "none" : `dinoObstacle ${worldDuration} linear infinite`,
-            }}
-          >
-            {/* Center Stem */}
-            <rect x="96" y="142" width="8" height="34" />
-            <rect x="98" y="138" width="4" height="4" />
-            {/* Left Arm */}
-            <rect x="88" y="152" width="8" height="5" />
-            <rect x="88" y="144" width="5" height="8" />
-            {/* Right Arm */}
-            <rect x="104" y="155" width="8" height="5" />
-            <rect x="107" y="147" width="5" height="8" />
-          </g>
-        )}
-
-        {/* Speed Streaks when Typing / Routing */}
-        {isFast && !isSleepy && !reduced && (
-          <g fill="#E12D26">
-            <rect x="44" y="88" width="18" height="3" style={{ animation: "speedStreak 0.45s linear infinite" }} />
-            <rect x="34" y="118" width="24" height="3" style={{ animation: "speedStreak 0.45s linear 0.15s infinite" }} />
-            <rect x="48" y="146" width="16" height="3" style={{ animation: "speedStreak 0.45s linear 0.3s infinite" }} />
-          </g>
-        )}
-
-        {/* Authentic Chrome T-Rex Runner */}
         <g
           style={{
-            transformOrigin: "100px 140px",
-            animation: reduced
-              ? "none"
-              : isSleepy
-                ? "none"
-                : state === "confused"
-                  ? "dinoStumble 0.45s ease-in-out infinite"
-                  : isJumping
-                    ? "dinoManualJump 0.52s ease-out infinite"
-                    : `dinoHurdle ${worldDuration} ease-in-out infinite`,
+            transformOrigin: "130px 122px",
+            animation: reduced || isSleepy ? "none" : `aiOrbitCCW ${isBusy ? "2.2s" : "12s"} linear infinite`,
           }}
         >
-          {/* Inner Sprint Bob */}
-          <g
-            style={{
-              animation:
-                reduced || isSleepy || isJumping
-                  ? "none"
-                  : `dinoSprintBob ${stepDuration} steps(2) infinite`,
-            }}
-          >
-            {/* Head & Snout */}
-            <path
-              fill="var(--ink)"
-              d="M104 52h44v4h4v24h-24v4h16v6h-28v6h-16V56h4v-4z"
-            />
+          <circle
+            cx="130"
+            cy="122"
+            r="66"
+            fill="none"
+            stroke={coreColor}
+            strokeWidth="2"
+            strokeDasharray="18 24"
+            opacity="0.65"
+          />
+        </g>
 
-            {/* Open Roaring Jaw on Happy / Listening */}
-            {(state === "happy" || state === "listening") && (
-              <rect x="128" y="84" width="18" height="6" fill="var(--surface)" />
-            )}
+        <g stroke="var(--ink)" strokeWidth="3.5" fill="none" strokeLinecap="square">
+          <path d="M52 64H38v16" />
+          <path d="M208 64h14v16" />
+          <path d="M52 180H38v-16" />
+          <path d="M208 180h14v-16" />
+        </g>
 
-            {/* Eye Cutout */}
-            <rect x="112" y="60" width="8" height="8" fill="var(--surface)" />
+        <g style={{ animation: reduced || isSleepy ? "none" : "aiHover 3.2s ease-in-out infinite" }}>
+          <line x1="108" y1="68" x2="102" y2="48" stroke="var(--ink)" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="101" cy="45" r="4" fill={coreColor} stroke="var(--ink)" strokeWidth="2.5" />
+          <line x1="152" y1="68" x2="158" y2="48" stroke="var(--ink)" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="159" cy="45" r="4" fill={coreColor} stroke="var(--ink)" strokeWidth="2.5" />
 
-            {/* Eye Pupil / Blink / Sleep */}
-            <g ref={eyesRef}>
-              {isSleepy || blink ? (
-                <rect x="112" y="64" width="8" height="2" fill="var(--ink)" />
-              ) : state === "confused" ? (
-                <rect x="114" y="62" width="4" height="4" fill="#E12D26" />
-              ) : (
-                <rect x="115" y="62" width="4" height="4" fill="var(--ink)" />
-              )}
-            </g>
+          <rect x="66" y="102" width="12" height="36" rx="2" fill={coreColor} stroke="var(--ink)" strokeWidth="3.5" />
+          <rect x="182" y="102" width="12" height="36" rx="2" fill={coreColor} stroke="var(--ink)" strokeWidth="3.5" />
 
-            {/* Red Accent Scarf (flutters while running) */}
-            <rect x="96" y="96" width="22" height="6" fill="#E12D26" />
-            <g style={{ animation: reduced || isSleepy ? "none" : `dinoTailWag ${stepDuration} steps(2) infinite` }}>
-              <rect x="86" y="100" width="12" height="6" fill="#E12D26" />
-              <rect x="80" y="104" width="8" height="6" fill="#E12D26" />
-            </g>
+          <polygon
+            points="92,68 168,68 184,84 184,156 168,172 92,172 76,156 76,84"
+            fill="var(--surface)"
+            stroke="var(--ink)"
+            strokeWidth="4"
+          />
 
-            {/* Neck, Torso & Stepped Tail */}
-            <path
-              fill="var(--ink)"
-              d="M96 102h24v38H80v-6h-8v-6h-8v-6h-8v-18h6v8h6v6h8v4h14v-12h6v-8z"
-            />
+          <rect x="88" y="84" width="84" height="56" rx="6" fill="#181818" stroke="var(--ink)" strokeWidth="3" />
 
-            {/* Animated T-Rex Arm */}
-            <g style={{ animation: reduced || isSleepy ? "none" : `dinoTailWag ${stepDuration} steps(2) infinite` }}>
-              <path fill="var(--ink)" d="M120 112h10v8h-4v-4h-6v-4z" />
-            </g>
+          <g stroke="#F4F2EC" strokeWidth="1" opacity="0.08">
+            <line x1="90" y1="96" x2="170" y2="96" />
+            <line x1="90" y1="108" x2="170" y2="108" />
+            <line x1="90" y1="120" x2="170" y2="120" />
+            <line x1="90" y1="132" x2="170" y2="132" />
+          </g>
 
-            {/* Running Legs (Alternating 2-Frame Pixel Cycle) */}
+          <g ref={eyeRef}>
             {isSleepy ? (
-              <>
-                <path fill="var(--ink)" d="M84 140h12v28h6v6H84v-34z" />
-                <path fill="var(--ink)" d="M104 140h12v28h6v6h-18v-34z" />
-              </>
-            ) : isJumping ? (
-              <>
-                {/* Mid-Air Tucked Legs */}
-                <path fill="var(--ink)" d="M84 140h10v18h6v6H84v-24z" />
-                <path fill="var(--ink)" d="M104 140h10v22h6v6h-16v-28z" />
-              </>
+              <line x1="112" y1="112" x2="148" y2="112" stroke={coreColor} strokeWidth="4" strokeLinecap="round" />
+            ) : blink ? (
+              <line x1="108" y1="112" x2="152" y2="112" stroke={coreColor} strokeWidth="4" strokeLinecap="round" />
+            ) : state === "happy" ? (
+              <path
+                d="M112 117L130 103L148 117"
+                fill="none"
+                stroke={coreColor}
+                strokeWidth="5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ) : state === "confused" ? (
+              <text
+                x="130"
+                y="122"
+                textAnchor="middle"
+                fill="#E12D26"
+                fontFamily="monospace"
+                fontWeight="bold"
+                fontSize="28"
+              >
+                ?
+              </text>
             ) : (
               <>
-                <g style={{ animation: reduced ? "none" : `dinoStepA ${stepDuration} infinite` }}>
-                  <path fill="var(--ink)" d="M84 140h10v22h6v6H84v-28z" />
-                  <path fill="var(--ink)" d="M104 140h10v32h6v4h-16v-36z" />
-                </g>
-                <g style={{ animation: reduced ? "none" : `dinoStepB ${stepDuration} infinite` }}>
-                  <path fill="var(--ink)" d="M84 140h10v32h6v4H84v-36z" />
-                  <path fill="var(--ink)" d="M104 140h10v20h6v6h-16v-26z" />
-                </g>
+                <circle
+                  cx="130"
+                  cy="112"
+                  r={state === "listening" || isBusy ? 16 : 13}
+                  fill="none"
+                  stroke={coreColor}
+                  strokeWidth="3.5"
+                />
+                <circle cx="130" cy="112" r={state === "listening" || isBusy ? 8 : 6} fill={coreColor} />
+                <circle cx="134" cy="108" r="2.5" fill="#FAF9F5" />
               </>
             )}
           </g>
+
+          <g transform="translate(106, 150)">
+            {[0, 1, 2, 3, 4].map((bar) => (
+              <rect
+                key={bar}
+                x={bar * 10}
+                y="0"
+                width="6"
+                height="12"
+                fill={isSleepy ? "#6B6A65" : coreColor}
+                style={{
+                  transformOrigin: `${bar * 10 + 3}px 12px`,
+                  animation:
+                    reduced || isSleepy
+                      ? "none"
+                      : `aiEqBar ${isBusy ? "0.28s" : state === "listening" ? "0.4s" : "1.1s"} ease-in-out ${bar * 0.12}s infinite`,
+                }}
+              />
+            ))}
+          </g>
+
+          <path d="M110 172h40l-8 12h-24z" fill="var(--ink)" />
         </g>
 
-        {/* Sleepy Zzz Particles */}
         {isSleepy && !reduced && (
           <g fill="var(--ink)" fontFamily="monospace" fontWeight="bold">
-            <text x="156" y="56" fontSize="13" style={{ animation: "dinoZzz 2.2s ease-out infinite" }}>z</text>
-            <text x="168" y="42" fontSize="16" style={{ animation: "dinoZzz 2.2s ease-out 0.7s infinite" }}>Z</text>
-          </g>
-        )}
-
-        {/* Confused Question Mark */}
-        {state === "confused" && (
-          <text x="158" y="56" fill="#E12D26" fontFamily="monospace" fontWeight="bold" fontSize="20">
-            ?
-          </text>
-        )}
-
-        {/* Thinking / Routing Pixel Dots */}
-        {isTurbo && !reduced && (
-          <g fill="#E12D26">
-            <rect x="160" y="52" width="5" height="5" className="animate-bounce" />
-            <rect x="170" y="45" width="5" height="5" className="animate-bounce [animation-delay:120ms]" />
-            <rect x="180" y="38" width="5" height="5" className="animate-bounce [animation-delay:240ms]" />
+            <text x="188" y="76" fontSize="13" style={{ animation: "aiZzz 2.2s ease-out infinite" }}>z</text>
+            <text x="200" y="60" fontSize="16" style={{ animation: "aiZzz 2.2s ease-out 0.7s infinite" }}>Z</text>
           </g>
         )}
       </svg>
 
-      {/* CLI Status Badge */}
-      <span className="absolute bottom-0 right-2 inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--surface)] px-2 py-1 font-mono text-[10px] text-[var(--ink)] shadow-[2px_2px_0px_var(--ink)] transition-all duration-150 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0px_var(--accent)]">
-        <span className="inline-block h-2 w-2" style={{ backgroundColor: beaconColor }} />
-        dino: {isSleepy ? "sleepy" : isTurbo ? "sprint" : "run"}
+      <span className="absolute -bottom-1 right-2 inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--surface)] px-2.5 py-1 font-mono text-[10px] font-bold text-[var(--ink)] shadow-[2px_2px_0px_var(--ink)] transition-all duration-150 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0px_var(--accent)]">
+        <span
+          className={`inline-block h-2 w-2 rounded-full ${isBusy || state === "listening" ? "animate-ping" : ""}`}
+          style={{ backgroundColor: coreColor }}
+        />
+        ai.core: {state}
       </span>
     </div>
   );
@@ -375,6 +296,10 @@ const TerminalBot = () => {
   const [lines, setLines] = useState<TerminalLine[]>([{ id: 0, content: 'type "help" or tap a command', tone: "accent" }]);
   const [typing, setTyping] = useState<{ id: number; full: string; visible: string } | null>(reduced ? null : { id: 0, full: 'type "help" or tap a command', visible: "" });
   const [state, setState] = useState<CharacterState>("idle");
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("ai-bot-state", { detail: state }));
+  }, [state]);
 
   const append = (content: string | ReactNode, tone: TerminalLine["tone"] = "normal") => {
     const id = lineId.current++;
@@ -458,7 +383,7 @@ const TerminalBot = () => {
       <div className="order-1 min-w-0 ink-box bg-[#181818] p-4 text-[#F4F2EC] shadow-[4px_4px_0px_#E12D26] transition-all duration-200 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[7px_7px_0px_#E12D26] sm:p-5 lg:order-2">
         <div ref={outputRef} aria-live="polite" className="h-[clamp(180px,35svh,280px)] overflow-y-auto font-mono text-xs leading-6 sm:h-[clamp(220px,32svh,300px)]">
           {lines.map((line) => (
-            <div key={line.id} className={line.tone === "error" ? "text-[#E12D26]" : line.tone === "accent" ? "text-[#E12D26]" : ""}>
+            <div key={line.id} className={line.tone === "error" || line.tone === "accent" ? "text-[#E12D26]" : ""}>
               {typing?.id === line.id ? typing.visible : line.content}
             </div>
           ))}
