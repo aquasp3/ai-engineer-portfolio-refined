@@ -9,6 +9,7 @@ const EmbeddingSpaceCanvas = () => {
   const { pathname } = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(true);
+  const [ready, setReady] = useState(false);
   const [fallback, setFallback] = useState(false);
   const reducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const lowEnd = typeof navigator !== "undefined" && (navigator.hardwareConcurrency || 8) <= 4;
@@ -24,13 +25,25 @@ const EmbeddingSpaceCanvas = () => {
   }, []);
 
   useEffect(() => {
+    const activate = () => setReady(true);
+    window.addEventListener("pointermove", activate, { once: true, passive: true });
+    window.addEventListener("scroll", activate, { once: true, passive: true });
+    window.addEventListener("touchstart", activate, { once: true, passive: true });
+    return () => {
+      window.removeEventListener("pointermove", activate);
+      window.removeEventListener("scroll", activate);
+      window.removeEventListener("touchstart", activate);
+    };
+  }, []);
+
+  useEffect(() => {
     try {
       const probe = document.createElement("canvas");
       if (!probe.getContext("webgl") && !probe.getContext("experimental-webgl")) setFallback(true);
     } catch { setFallback(true); }
   }, []);
 
-  if (fallback || lowEnd) return <FallbackSpace />;
+  if (fallback || lowEnd || !ready) return <FallbackSpace />;
   return <div ref={containerRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-0 opacity-30 dark:opacity-20">
     <Suspense fallback={<FallbackSpace />}>
       {visible && <EmbeddingScene route={pathname} reducedMotion={reducedMotion} onError={() => setFallback(true)} />}

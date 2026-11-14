@@ -57,7 +57,12 @@ const ScenePoints = ({ route, reducedMotion }: { route: string; reducedMotion: b
 };
 
 const EmbeddingScene = ({ route, reducedMotion, onError }: Props) => {
-  return <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 45 }} frameloop={reducedMotion ? "demand" : "always"} onCreated={({ gl }) => { gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); }}><ScenePoints route={route} reducedMotion={reducedMotion} /></Canvas>;
+  try {
+    return <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 45 }} frameloop={reducedMotion ? "demand" : "always"} onCreated={({ gl }) => { gl.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); }}><ScenePoints route={route} reducedMotion={reducedMotion} /></Canvas>;
+  } catch {
+    onError();
+    return null;
+  }
 };
 
 export default EmbeddingScene;
