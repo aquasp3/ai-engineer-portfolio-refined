@@ -18,6 +18,7 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
   const visible = useRef(true);
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const [blink, setBlink] = useState(false);
+  const [manualJump, setManualJump] = useState(false);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -36,8 +37,8 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
         current.current.x += (target.current.x - current.current.x) * 0.12;
         current.current.y += (target.current.y - current.current.y) * 0.12;
         root.style.transform = `perspective(700px) rotateX(${current.current.y}deg) rotateY(${current.current.x}deg)`;
-        const glanceX = state === "thinking" ? 3 : Math.max(-3, Math.min(3, current.current.x / 4));
-        const glanceY = state === "thinking" ? -2 : Math.max(-3, Math.min(3, current.current.y / 3));
+        const glanceX = state === "thinking" ? 2 : Math.max(-2, Math.min(2, current.current.x / 5));
+        const glanceY = state === "thinking" ? -2 : Math.max(-2, Math.min(2, current.current.y / 4));
         eyesRef.current?.style.setProperty("transform", `translate3d(${glanceX}px, ${glanceY}px, 0)`);
       }
       frame = requestAnimationFrame(animate);
@@ -55,216 +56,306 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
     return () => window.clearInterval(timer);
   }, [reduced]);
 
-  const isRunning = state === "thinking" || state === "routing";
-  const isJumping = state === "happy";
+  const triggerJump = () => {
+    if (reduced || manualJump) return;
+    setManualJump(true);
+    window.setTimeout(() => setManualJump(false), 520);
+  };
+
+  const isTurbo = state === "thinking" || state === "routing";
+  const isFast = isTurbo || state === "listening";
+  const isSleepy = state === "sleepy";
+  const isJumping = state === "happy" || manualJump;
   const beaconColor =
     state === "happy" || state === "listening"
       ? "#22C55E"
       : state === "sleepy"
-        ? "#5C5B57"
+        ? "#737373"
         : "#E12D26";
+
+  const stepDuration = isTurbo ? "0.16s" : isFast ? "0.22s" : "0.32s";
+  const worldDuration = isTurbo ? "1.1s" : isFast ? "1.6s" : "2.6s";
 
   return (
     <div
       ref={rootRef}
+      onClick={triggerJump}
+      onMouseEnter={triggerJump}
       aria-hidden="true"
-      className="group order-2 relative mx-auto w-[65%] max-w-[230px] cursor-pointer transition-transform duration-200 lg:order-1 lg:w-full lg:max-w-[280px]"
+      className="group order-2 relative mx-auto w-[65%] max-w-[230px] cursor-pointer select-none transition-transform duration-200 lg:order-1 lg:w-full lg:max-w-[280px]"
     >
       <style>{`
-        @keyframes dinoIdle {
+        @keyframes dinoHurdle {
+          0%, 58%, 100% { transform: translateY(0px); }
+          72% { transform: translateY(-34px); }
+          84% { transform: translateY(-28px); }
+        }
+        @keyframes dinoManualJump {
+          0%, 100% { transform: translateY(0px); }
+          45% { transform: translateY(-38px); }
+        }
+        @keyframes dinoSprintBob {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-4px); }
         }
-        @keyframes dinoJump {
-          0%, 100% { transform: translateY(0px); }
-          40% { transform: translateY(-22px); }
+        @keyframes dinoStumble {
+          0%, 100% { transform: rotate(0deg) translateX(0px); }
+          25% { transform: rotate(-6deg) translateX(-3px); }
+          75% { transform: rotate(6deg) translateX(3px); }
         }
-        @keyframes dinoSprint {
-          0%, 100% { transform: translateY(0px) rotate(4deg); }
-          50% { transform: translateY(-6px) rotate(4deg); }
+        @keyframes dinoStepA {
+          0%, 49% { opacity: 1; }
+          50%, 100% { opacity: 0; }
         }
-        @keyframes dinoLegLeft {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-        }
-        @keyframes dinoLegRight {
-          0%, 100% { transform: translateY(-6px); }
-          50% { transform: translateY(0px); }
+        @keyframes dinoStepB {
+          0%, 49% { opacity: 0; }
+          50%, 100% { opacity: 1; }
         }
         @keyframes dinoGround {
           0% { stroke-dashoffset: 0; }
-          100% { stroke-dashoffset: 32; }
+          100% { stroke-dashoffset: 48; }
+        }
+        @keyframes dinoObstacle {
+          0% { transform: translateX(170px); opacity: 0; }
+          10% { opacity: 1; }
+          88% { opacity: 1; }
+          100% { transform: translateX(-110px); opacity: 0; }
+        }
+        @keyframes dinoCloud {
+          0% { transform: translateX(140px); }
+          100% { transform: translateX(-140px); }
+        }
+        @keyframes dinoBird {
+          0% { transform: translate(160px, 0px); opacity: 0; }
+          12% { opacity: 1; }
+          50% { transform: translate(20px, -6px); }
+          88% { opacity: 1; }
+          100% { transform: translate(-120px, 2px); opacity: 0; }
+        }
+        @keyframes dinoTailWag {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-3px); }
         }
         @keyframes dinoZzz {
           0% { opacity: 0; transform: translate(0, 4px); }
           50% { opacity: 1; }
           100% { opacity: 0; transform: translate(10px, -16px); }
         }
+        @keyframes speedStreak {
+          0% { transform: translateX(20px); opacity: 0; }
+          40% { opacity: 0.9; }
+          100% { transform: translateX(-45px); opacity: 0; }
+        }
       `}</style>
 
       <svg
-        viewBox="0 0 280 280"
+        viewBox="0 0 260 220"
         shapeRendering="crispEdges"
-        className="w-full overflow-visible transition-transform duration-200 group-hover:scale-105"
+        className="w-full overflow-hidden transition-transform duration-200 group-hover:scale-105"
       >
-        {/* Pixel Clouds */}
-        <g fill="#181818" opacity="0.16">
-          <rect x="34" y="42" width="36" height="6" />
-          <rect x="42" y="36" width="20" height="6" />
-          <rect x="200" y="58" width="42" height="6" />
-          <rect x="210" y="52" width="22" height="6" />
-        </g>
-
-        {/* Ground Track */}
-        <line x1="20" y1="226" x2="260" y2="226" stroke="#181818" strokeWidth="4" />
-        <line
-          x1="24"
-          y1="236"
-          x2="256"
-          y2="236"
-          stroke="#181818"
-          strokeWidth="4"
-          strokeDasharray="6 10"
-          style={{
-            animation: reduced
-              ? "none"
-              : isRunning
-                ? "dinoGround 0.35s linear infinite"
-                : "dinoGround 2.4s linear infinite",
-          }}
-        />
-
-        {/* Mini Pixel Cactus */}
-        <g fill="#E12D26" stroke="#181818" strokeWidth="3">
-          <rect x="216" y="184" width="10" height="42" />
-          <rect x="206" y="196" width="10" height="8" />
-          <rect x="206" y="188" width="6" height="10" />
-          <rect x="226" y="200" width="10" height="8" />
-          <rect x="230" y="190" width="6" height="12" />
-        </g>
-
-        {/* Main Pixel Dino Character */}
+        {/* Drifting Pixel Clouds */}
         <g
-          style={{
-            transformOrigin: "130px 180px",
-            animation: reduced
-              ? "none"
-              : isJumping
-                ? "dinoJump 0.55s ease-out infinite"
-                : isRunning
-                  ? "dinoSprint 0.28s ease-in-out infinite"
-                  : state === "sleepy"
-                    ? "none"
-                    : "dinoIdle 2.2s ease-in-out infinite",
-          }}
+          fill="var(--ink)"
+          opacity="0.16"
+          style={{ animation: reduced || isSleepy ? "none" : "dinoCloud 9s linear infinite" }}
         >
-          {/* Tail */}
-          <rect x="52" y="148" width="12" height="24" fill="#181818" />
-          <rect x="64" y="156" width="12" height="24" fill="#181818" />
-          <rect x="76" y="162" width="12" height="26" fill="#181818" />
-
-          {/* Torso */}
-          <rect x="88" y="136" width="54" height="58" fill="#181818" />
-          {/* Belly Highlight */}
-          <rect x="116" y="148" width="20" height="36" fill="#FAF9F5" />
-
-          {/* Red CLI Scarf / Collar */}
-          <rect x="96" y="128" width="54" height="10" fill="#E12D26" />
-          <rect x="86" y="134" width="14" height="18" fill="#E12D26" />
-
-          {/* Little T-Rex Arms */}
-          <rect x="142" y="150" width="18" height="8" fill="#181818" />
-          <rect x="154" y="158" width="6" height="8" fill="#181818" />
-
-          {/* Dino Head */}
-          <rect x="104" y="72" width="76" height="56" fill="#181818" />
-          {/* Snout Tip */}
-          <rect x="180" y="80" width="12" height="32" fill="#181818" />
-          {/* Red Dorsal Spikes */}
-          <rect x="96" y="82" width="8" height="10" fill="#E12D26" />
-          <rect x="96" y="100" width="8" height="10" fill="#E12D26" />
-
-          {/* Jaw / Mouth */}
-          {state === "happy" || state === "listening" ? (
-            <>
-              {/* Open Roar / Happy Jaw */}
-              <rect x="122" y="112" width="64" height="6" fill="#FAF9F5" />
-              <rect x="116" y="118" width="62" height="10" fill="#181818" />
-            </>
-          ) : (
-            <rect x="134" y="112" width="46" height="4" fill="#FAF9F5" />
-          )}
-
-          {/* Eye Socket */}
-          <rect x="122" y="84" width="18" height="18" fill="#FAF9F5" />
-
-          {/* Eye Pupil by State */}
-          <g ref={eyesRef}>
-            {state === "sleepy" ? (
-              <rect x="124" y="92" width="14" height="4" fill="#181818" />
-            ) : blink ? (
-              <rect x="124" y="92" width="14" height="4" fill="#181818" />
-            ) : state === "confused" ? (
-              <>
-                <rect x="126" y="88" width="10" height="10" fill="#E12D26" />
-                <rect x="129" y="91" width="4" height="4" fill="#FAF9F5" />
-              </>
-            ) : (
-              <>
-                <rect x="128" y="88" width="10" height="10" fill="#181818" />
-                <rect x="132" y="89" width="3" height="3" fill="#FAF9F5" />
-              </>
-            )}
-          </g>
-
-          {/* Left Leg */}
-          <g
-            style={{
-              animation: reduced || !isRunning ? "none" : "dinoLegLeft 0.25s steps(2) infinite",
-            }}
-          >
-            <rect x="96" y="194" width="14" height="24" fill="#181818" />
-            <rect x="96" y="218" width="22" height="8" fill="#181818" />
-          </g>
-
-          {/* Right Leg */}
-          <g
-            style={{
-              animation: reduced || !isRunning ? "none" : "dinoLegRight 0.25s steps(2) infinite",
-            }}
-          >
-            <rect x="124" y="194" width="14" height="24" fill="#181818" />
-            <rect x="124" y="218" width="22" height="8" fill="#181818" />
-          </g>
+          <rect x="40" y="32" width="32" height="4" />
+          <rect x="48" y="28" width="16" height="4" />
+          <rect x="160" y="46" width="36" height="4" />
+          <rect x="170" y="42" width="18" height="4" />
         </g>
 
-        {/* State Overlays */}
-        {state === "sleepy" && !reduced && (
-          <g fill="#181818" fontFamily="monospace" fontWeight="bold">
-            <text x="192" y="76" fontSize="14" style={{ animation: "dinoZzz 2.2s ease-out infinite" }}>z</text>
-            <text x="206" y="60" fontSize="18" style={{ animation: "dinoZzz 2.2s ease-out 0.7s infinite" }}>Z</text>
+        {/* Flying Pixel Pterodactyl */}
+        {!isSleepy && (
+          <g
+            fill="var(--ink)"
+            opacity="0.75"
+            style={{ animation: reduced ? "none" : "dinoBird 5.4s linear 1.2s infinite" }}
+          >
+            {/* Bird Body & Beak */}
+            <rect x="92" y="72" width="16" height="6" />
+            <rect x="86" y="74" width="6" height="4" />
+            <rect x="108" y="70" width="8" height="4" />
+            {/* Flapping Wing Frame A */}
+            <g style={{ animation: reduced ? "none" : "dinoStepA 0.35s infinite" }}>
+              <rect x="96" y="62" width="6" height="10" />
+              <rect x="98" y="58" width="4" height="4" />
+            </g>
+            {/* Flapping Wing Frame B */}
+            <g style={{ animation: reduced ? "none" : "dinoStepB 0.35s infinite" }}>
+              <rect x="96" y="78" width="6" height="8" />
+              <rect x="98" y="86" width="4" height="4" />
+            </g>
           </g>
         )}
 
+        {/* Ground Horizon & Scrolling Pebbles */}
+        <line x1="8" y1="176" x2="252" y2="176" stroke="var(--ink)" strokeWidth="3" />
+        <line
+          x1="12"
+          y1="184"
+          x2="248"
+          y2="184"
+          stroke="var(--ink)"
+          strokeWidth="3"
+          strokeDasharray="4 10 8 12"
+          style={{
+            animation: reduced || isSleepy ? "none" : `dinoGround ${isTurbo ? "0.22s" : isFast ? "0.35s" : "0.55s"} linear infinite`,
+          }}
+        />
+
+        {/* Scrolling Pixel Cactus Hurdle */}
+        {!isSleepy && (
+          <g
+            fill="var(--ink)"
+            style={{
+              animation: reduced ? "none" : `dinoObstacle ${worldDuration} linear infinite`,
+            }}
+          >
+            {/* Center Stem */}
+            <rect x="96" y="142" width="8" height="34" />
+            <rect x="98" y="138" width="4" height="4" />
+            {/* Left Arm */}
+            <rect x="88" y="152" width="8" height="5" />
+            <rect x="88" y="144" width="5" height="8" />
+            {/* Right Arm */}
+            <rect x="104" y="155" width="8" height="5" />
+            <rect x="107" y="147" width="5" height="8" />
+          </g>
+        )}
+
+        {/* Speed Streaks when Typing / Routing */}
+        {isFast && !isSleepy && !reduced && (
+          <g fill="#E12D26">
+            <rect x="44" y="88" width="18" height="3" style={{ animation: "speedStreak 0.45s linear infinite" }} />
+            <rect x="34" y="118" width="24" height="3" style={{ animation: "speedStreak 0.45s linear 0.15s infinite" }} />
+            <rect x="48" y="146" width="16" height="3" style={{ animation: "speedStreak 0.45s linear 0.3s infinite" }} />
+          </g>
+        )}
+
+        {/* Authentic Chrome T-Rex Runner */}
+        <g
+          style={{
+            transformOrigin: "100px 140px",
+            animation: reduced
+              ? "none"
+              : isSleepy
+                ? "none"
+                : state === "confused"
+                  ? "dinoStumble 0.45s ease-in-out infinite"
+                  : isJumping
+                    ? "dinoManualJump 0.52s ease-out infinite"
+                    : `dinoHurdle ${worldDuration} ease-in-out infinite`,
+          }}
+        >
+          {/* Inner Sprint Bob */}
+          <g
+            style={{
+              animation:
+                reduced || isSleepy || isJumping
+                  ? "none"
+                  : `dinoSprintBob ${stepDuration} steps(2) infinite`,
+            }}
+          >
+            {/* Head & Snout */}
+            <path
+              fill="var(--ink)"
+              d="M104 52h44v4h4v24h-24v4h16v6h-28v6h-16V56h4v-4z"
+            />
+
+            {/* Open Roaring Jaw on Happy / Listening */}
+            {(state === "happy" || state === "listening") && (
+              <rect x="128" y="84" width="18" height="6" fill="var(--surface)" />
+            )}
+
+            {/* Eye Cutout */}
+            <rect x="112" y="60" width="8" height="8" fill="var(--surface)" />
+
+            {/* Eye Pupil / Blink / Sleep */}
+            <g ref={eyesRef}>
+              {isSleepy || blink ? (
+                <rect x="112" y="64" width="8" height="2" fill="var(--ink)" />
+              ) : state === "confused" ? (
+                <rect x="114" y="62" width="4" height="4" fill="#E12D26" />
+              ) : (
+                <rect x="115" y="62" width="4" height="4" fill="var(--ink)" />
+              )}
+            </g>
+
+            {/* Red Accent Scarf (flutters while running) */}
+            <rect x="96" y="96" width="22" height="6" fill="#E12D26" />
+            <g style={{ animation: reduced || isSleepy ? "none" : `dinoTailWag ${stepDuration} steps(2) infinite` }}>
+              <rect x="86" y="100" width="12" height="6" fill="#E12D26" />
+              <rect x="80" y="104" width="8" height="6" fill="#E12D26" />
+            </g>
+
+            {/* Neck, Torso & Stepped Tail */}
+            <path
+              fill="var(--ink)"
+              d="M96 102h24v38H80v-6h-8v-6h-8v-6h-8v-18h6v8h6v6h8v4h14v-12h6v-8z"
+            />
+
+            {/* Animated T-Rex Arm */}
+            <g style={{ animation: reduced || isSleepy ? "none" : `dinoTailWag ${stepDuration} steps(2) infinite` }}>
+              <path fill="var(--ink)" d="M120 112h10v8h-4v-4h-6v-4z" />
+            </g>
+
+            {/* Running Legs (Alternating 2-Frame Pixel Cycle) */}
+            {isSleepy ? (
+              <>
+                <path fill="var(--ink)" d="M84 140h12v28h6v6H84v-34z" />
+                <path fill="var(--ink)" d="M104 140h12v28h6v6h-18v-34z" />
+              </>
+            ) : isJumping ? (
+              <>
+                {/* Mid-Air Tucked Legs */}
+                <path fill="var(--ink)" d="M84 140h10v18h6v6H84v-24z" />
+                <path fill="var(--ink)" d="M104 140h10v22h6v6h-16v-28z" />
+              </>
+            ) : (
+              <>
+                <g style={{ animation: reduced ? "none" : `dinoStepA ${stepDuration} infinite` }}>
+                  <path fill="var(--ink)" d="M84 140h10v22h6v6H84v-28z" />
+                  <path fill="var(--ink)" d="M104 140h10v32h6v4h-16v-36z" />
+                </g>
+                <g style={{ animation: reduced ? "none" : `dinoStepB ${stepDuration} infinite` }}>
+                  <path fill="var(--ink)" d="M84 140h10v32h6v4H84v-36z" />
+                  <path fill="var(--ink)" d="M104 140h10v20h6v6h-16v-26z" />
+                </g>
+              </>
+            )}
+          </g>
+        </g>
+
+        {/* Sleepy Zzz Particles */}
+        {isSleepy && !reduced && (
+          <g fill="var(--ink)" fontFamily="monospace" fontWeight="bold">
+            <text x="156" y="56" fontSize="13" style={{ animation: "dinoZzz 2.2s ease-out infinite" }}>z</text>
+            <text x="168" y="42" fontSize="16" style={{ animation: "dinoZzz 2.2s ease-out 0.7s infinite" }}>Z</text>
+          </g>
+        )}
+
+        {/* Confused Question Mark */}
         {state === "confused" && (
-          <text x="196" y="74" fill="#E12D26" fontFamily="monospace" fontWeight="bold" fontSize="22">
+          <text x="158" y="56" fill="#E12D26" fontFamily="monospace" fontWeight="bold" fontSize="20">
             ?
           </text>
         )}
 
-        {isRunning && !reduced && (
+        {/* Thinking / Routing Pixel Dots */}
+        {isTurbo && !reduced && (
           <g fill="#E12D26">
-            <rect x="198" y="68" width="6" height="6" className="animate-bounce" />
-            <rect x="210" y="60" width="6" height="6" className="animate-bounce [animation-delay:120ms]" />
-            <rect x="222" y="52" width="6" height="6" className="animate-bounce [animation-delay:240ms]" />
+            <rect x="160" y="52" width="5" height="5" className="animate-bounce" />
+            <rect x="170" y="45" width="5" height="5" className="animate-bounce [animation-delay:120ms]" />
+            <rect x="180" y="38" width="5" height="5" className="animate-bounce [animation-delay:240ms]" />
           </g>
         )}
       </svg>
 
       {/* CLI Status Badge */}
-      <span className="absolute bottom-1 right-2 inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--surface)] px-2 py-1 font-mono text-[10px] shadow-[2px_2px_0px_var(--ink)] transition-all duration-150 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0px_var(--accent)]">
+      <span className="absolute bottom-0 right-2 inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--surface)] px-2 py-1 font-mono text-[10px] text-[var(--ink)] shadow-[2px_2px_0px_var(--ink)] transition-all duration-150 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0px_var(--accent)]">
         <span className="inline-block h-2 w-2" style={{ backgroundColor: beaconColor }} />
-        dino: {state}
+        dino: {isSleepy ? "sleepy" : isTurbo ? "sprint" : "run"}
       </span>
     </div>
   );
