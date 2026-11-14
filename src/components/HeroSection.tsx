@@ -1,60 +1,160 @@
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight, Github, Linkedin, Mail, Send } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ArrowUpRight, Github, Linkedin, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { contact } from "@/data/portfolio";
-import { intentLabels, intentTargetPath, matchIntent, type IntentMatch } from "@/lib/intentRouter";
+import { parseCommand } from "@/lib/cliCommands";
+import { intentTargetPath, matchIntent } from "@/lib/intents";
 
-const DeveloperCharacter = ({ state }: { state: "idle" | "routing" | "thinking" }) => {
+type CharacterState = "idle" | "listening" | "thinking" | "routing" | "happy" | "confused" | "sleepy";
+type TerminalLine = { id: number; content: string | ReactNode; tone?: "normal" | "error" | "accent" };
+const commands = ["help", "ls", "cd", "open", "projects", "experience", "skills", "blogs", "resume", "contact", "whoami", "clear"];
+const pagePaths = { projects: "/projects", experience: "/experience", skills: "/skills", blogs: "/blogs", contact: "/contact" };
+
+const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const eyesRef = useRef<SVGGElement>(null);
+  const target = useRef({ x: 0, y: 0 });
+  const current = useRef({ x: 0, y: 0 });
+  const visible = useRef(true);
+  const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const [blink, setBlink] = useState(false);
-  const [pupil, setPupil] = useState({ x: 0, y: 0 });
+
   useEffect(() => {
+    const root = rootRef.current;
+    if (!root || reduced) return;
+    const move = (event: MouseEvent) => {
+      target.current.x = Math.max(-12, Math.min(12, ((event.clientX / window.innerWidth) - 0.5) * 24));
+      target.current.y = Math.max(-8, Math.min(8, ((event.clientY / window.innerHeight) - 0.5) * -16));
+    };
+    const recenter = () => { target.current = { x: 0, y: 0 }; };
+    const observer = "IntersectionObserver" in window
+      ? new IntersectionObserver(([entry]) => { visible.current = entry.isIntersecting; }, { threshold: 0 })
+      : null;
+    let frame = 0;
+    const animate = () => {
+      if (visible.current && !document.hidden) {
+        current.current.x += (target.current.x - current.current.x) * 0.12;
+        current.current.y += (target.current.y - current.current.y) * 0.12;
+        root.style.transform = `perspective(700px) rotateX(${current.current.y}deg) rotateY(${current.current.x}deg)`;
+        eyesRef.current?.style.setProperty("transform", `translate3d(${Math.max(-4, Math.min(4, current.current.x / 3))}px, ${Math.max(-4, Math.min(4, current.current.y / 2))}px, 0)`);
+      }
+      frame = requestAnimationFrame(animate);
+    };
+    observer?.observe(root);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseleave", recenter);
+    frame = requestAnimationFrame(animate);
+    return () => { cancelAnimationFrame(frame); observer?.disconnect(); window.removeEventListener("mousemove", move); window.removeEventListener("mouseleave", recenter); };
+  }, [reduced]);
+
+  useEffect(() => {
+    if (reduced) return;
     const timer = window.setInterval(() => { setBlink(true); window.setTimeout(() => setBlink(false), 130); }, 3800);
     return () => window.clearInterval(timer);
-  }, []);
-  return <div onMouseMove={(event) => { const box = event.currentTarget.getBoundingClientRect(); setPupil({ x: (event.clientX - box.left - box.width / 2) / 35, y: (event.clientY - box.top - box.height / 2) / 45 }); }} className={`relative mx-auto w-full max-w-[280px] transition-transform duration-300 ${state === "routing" ? "-translate-y-2" : "animate-[float_4s_ease-in-out_infinite]"}`}>
-    <svg viewBox="0 0 280 300" className="w-full" role="img" aria-label="Hand-drawn developer character"><path d="M75 248c12-48 118-48 130 0v30H75z" fill="#E12D26" stroke="#181818" strokeWidth="4" /><path d="M77 91c0-57 126-57 126 0v70c0 34-28 62-63 62s-63-28-63-62z" fill="#FAF9F5" stroke="#181818" strokeWidth="4" /><path d="M72 99c-13-57 30-88 75-79 47-5 72 33 60 81l-35-27c-23 13-65 14-100 25z" fill="#E12D26" stroke="#181818" strokeWidth="4" /><path d="M97 146h20M163 146h20" stroke="#181818" strokeWidth="4" strokeLinecap="round" /><ellipse cx={111 + pupil.x} cy={158 + pupil.y} rx="7" ry={blink ? 1 : 8} fill="#181818" /><ellipse cx={169 + pupil.x} cy={158 + pupil.y} rx="7" ry={blink ? 1 : 8} fill="#181818" /><path d="M128 184c9 8 18 8 27 0" stroke="#181818" strokeWidth="4" strokeLinecap="round" /><path d="M113 247v31M167 247v31" stroke="#181818" strokeWidth="4" /><path d="M98 275H75M182 275h23" stroke="#181818" strokeWidth="4" strokeLinecap="round" /></svg>
-    <span className="absolute bottom-1 right-2 border-2 border-[var(--ink)] bg-[var(--surface)] px-2 py-1 font-mono text-[10px] shadow-[2px_2px_0px_var(--ink)]">node: {state}{state === "thinking" && <span className="ml-1 inline-flex gap-0.5" aria-label="thinking"><i>.</i><i>.</i><i>.</i></span>}</span>
+  }, [reduced]);
+
+  const eyebrowY = state === "confused" ? 140 : state === "happy" ? 143 : 146;
+  return <div ref={rootRef} aria-hidden="true" className="pointer-events-none relative mx-auto w-full max-w-[280px] transition-transform duration-200">
+    <svg viewBox="0 0 280 300" className="w-full"><path d="M75 248c12-48 118-48 130 0v30H75z" fill="#E12D26" stroke="#181818" strokeWidth="4" /><g style={{ transformOrigin: "140px 150px", transition: reduced ? "none" : "transform 220ms cubic-bezier(.22,1,.36,1)" }}><path d="M77 91c0-57 126-57 126 0v70c0 34-28 62-63 62s-63-28-63-62z" fill="#FAF9F5" stroke="#181818" strokeWidth="4" /><path d="M72 99c-13-57 30-88 75-79 47-5 72 33 60 81l-35-27c-23 13-65 14-100 25z" fill="#E12D26" stroke="#181818" strokeWidth="4" /><path d={`M97 ${eyebrowY}h20M163 ${eyebrowY}h20`} stroke="#181818" strokeWidth="4" strokeLinecap="round" /><g ref={eyesRef}><ellipse cx="111" cy="158" rx="7" ry={blink ? 1 : 8} fill="#181818" /><ellipse cx="169" cy="158" rx="7" ry={blink ? 1 : 8} fill="#181818" /></g>{state === "confused" ? <path d="M128 188c8-6 18-6 27 0" stroke="#181818" strokeWidth="4" strokeLinecap="round" /> : <path d={state === "happy" ? "M126 180c10 12 20 12 30 0" : "M128 184c9 8 18 8 27 0"} stroke="#181818" strokeWidth="4" strokeLinecap="round" />}<path d="M113 247v31M167 247v31" stroke="#181818" strokeWidth="4" /><path d="M98 275H75M182 275h23" stroke="#181818" strokeWidth="4" strokeLinecap="round" /></g></svg>
+    <span className="absolute bottom-1 right-2 border-2 border-[var(--ink)] bg-[var(--surface)] px-2 py-1 font-mono text-[10px] shadow-[2px_2px_0px_var(--ink)]">node: {state}</span>
   </div>;
 };
 
-const HeroSection = () => {
+const TerminalBot = () => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [state, setState] = useState<"idle" | "routing" | "thinking">("idle");
-  const [trace, setTrace] = useState("");
-  const [suggestion, setSuggestion] = useState("");
-  const [recent, setRecent] = useState<string[]>([]);
-  const routeMatch = (match: IntentMatch) => {
-    const path = intentTargetPath[match.target];
-    if (match.target === "resume" || match.target === "github" || match.target === "linkedin") {
-      window.open(path, "_blank", "noopener,noreferrer");
-      setState("idle");
-      return;
-    }
-    setState("routing");
-    setTrace(`intent_detected -> routing... ${intentLabels[match.target]}`);
-    window.setTimeout(() => { navigate(path); setState("idle"); }, 500);
+  const outputRef = useRef<HTMLDivElement>(null);
+  const lineId = useRef(1);
+  const historyIndex = useRef(-1);
+  const running = useRef(false);
+  const timers = useRef<number[]>([]);
+  const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const [input, setInput] = useState("");
+  const [history, setHistory] = useState<string[]>([]);
+  const [lines, setLines] = useState<TerminalLine[]>([{ id: 0, content: 'type "help" or tap a command', tone: "accent" }]);
+  const [typing, setTyping] = useState<{ id: number; full: string; visible: string } | null>(reduced ? null : { id: 0, full: 'type "help" or tap a command', visible: "" });
+  const [state, setState] = useState<CharacterState>("idle");
+
+  const append = (content: string | ReactNode, tone: TerminalLine["tone"] = "normal") => {
+    const id = lineId.current++;
+    setLines((current) => [...current, { id, content, tone }]);
+    if (typeof content === "string" && !reduced) setTyping({ id, full: content, visible: "" });
   };
-  const routeQuery = (query: string) => {
-    const trimmed = query.trim();
-    setSuggestion("");
-    if (!trimmed) { setTrace("intent_unknown -> try RAG, FastAPI, NLP, resume"); return; }
-    setRecent((items) => [trimmed, ...items.filter((item) => item !== trimmed)].slice(0, 4));
-    setState("thinking");
-    window.setTimeout(() => {
-      const match = matchIntent(trimmed);
-      if (!match) { setState("idle"); setTrace("intent_unknown -> try RAG, FastAPI, NLP, resume, contact"); return; }
-      if (match.suggestion) setSuggestion(match.suggestion);
-      routeMatch(match);
-    }, 500);
-  };
+  const clear = () => { setLines([]); setTyping(null); setInput(""); };
+  const wake = () => { if (state === "sleepy") setState("idle"); };
+
   useEffect(() => {
-    const clear = (event: KeyboardEvent) => { if (event.key === "Escape") { if (inputRef.current) inputRef.current.value = ""; setTrace(""); setSuggestion(""); setState("idle"); } };
-    window.addEventListener("keydown", clear);
-    return () => window.removeEventListener("keydown", clear);
-  }, []);
-  return <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-20 sm:px-8 sm:pt-28 lg:grid-cols-[0.8fr_1.2fr]"><DeveloperCharacter state={state} /><div><p className="font-mono text-xs uppercase tracking-widest text-[var(--accent)]">01 // AI ENGINEER IN TRAINING</p><h1 className="font-display mt-5 text-5xl leading-[0.95] sm:text-7xl">Sathvik<br /><span className="text-[var(--accent)]">Konduri.</span></h1><p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--muted-ink)]">B.Tech Computer Science & Engineering (AI & ML) undergraduate at Methodist College of Engineering and Technology, Hyderabad. Expected 2027 · CGPA: 9.11/10.</p><div className="mt-7 flex flex-wrap gap-4"><a href={contact.github} target="_blank" rel="noopener noreferrer" className="ink-btn-secondary px-4"><Github size={16} /> GitHub</a><a href={contact.linkedin} target="_blank" rel="noopener noreferrer" className="ink-btn-secondary px-4"><Linkedin size={16} /> LinkedIn</a><a href={contact.mailto} className="ink-btn-secondary px-4"><Mail size={16} /> Email</a></div>
-    <div className="ink-box mt-10 max-w-2xl p-5 sm:p-6" aria-labelledby="routing-heading"><p className="font-mono text-xs text-[var(--muted-ink)]">ROUTING BOT / READY</p><p id="routing-heading" className="mt-3 text-lg font-bold">What should we inspect?</p><div className="mt-4 flex flex-wrap gap-2">{[["Inspect Projects", "/projects"], ["View Experience", "/experience"], ["Explore Skills", "/skills"], ["Read Blogs", "/blogs"], ["Contact Sathvik", "/contact"]].map(([label, path]) => <button key={path} onClick={() => navigate(path)} className="min-h-[44px] border-2 border-[var(--ink)] px-3 text-left text-xs font-bold hover:bg-[var(--ink)] hover:text-[var(--page-bg)]">{label}</button>)}</div><form onSubmit={(event) => { event.preventDefault(); routeQuery(inputRef.current?.value ?? ""); }} className="mt-4 flex gap-2"><label htmlFor="intent-input" className="sr-only">Route by keyword</label><input ref={inputRef} id="intent-input" aria-describedby="intent-help" aria-label="Route by keyword" placeholder="Type a keyword (e.g., RAG, FastAPI, NLP, resume)..." className="min-h-[44px] min-w-0 flex-1 border-2 border-[var(--ink)] bg-transparent px-3 text-xs outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]" /><button className="ink-btn-primary min-w-[44px] px-3" aria-label="Route"><Send size={16} /></button></form><p id="intent-help" className="mt-2 text-[10px] text-[var(--muted-ink)]">Enter to route · Esc to clear</p>{recent.length > 0 && <div className="mt-3 flex flex-wrap gap-2" aria-label="Recent queries">{recent.map((query) => <button key={query} onClick={() => routeQuery(query)} className="min-h-[32px] border border-[var(--ink)] px-2 font-mono text-[10px]">↻ {query}</button>)}</div>}<p className="mt-3 min-h-5 font-mono text-[11px] text-[var(--accent)]" aria-live="polite">{suggestion ? `did_you_mean -> ${suggestion}? ` : ""}{trace}</p></div>
-    <a href={contact.portfolio} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-[44px] items-center gap-2 text-sm font-bold hover:text-[var(--accent)]">External portfolio <ArrowUpRight size={15} /></a></div></section>;
+    if (!typing) return;
+    if (reduced || typing.visible.length >= typing.full.length) { if (typing.visible.length >= typing.full.length) setTyping(null); return; }
+    const timer = window.setTimeout(() => setTyping((current) => current ? { ...current, visible: current.full.slice(0, current.visible.length + 1) } : null), 15);
+    return () => window.clearTimeout(timer);
+  }, [typing, reduced]);
+
+  useEffect(() => { if (outputRef.current) outputRef.current.scrollTop = outputRef.current.scrollHeight; }, [lines, typing]);
+  useEffect(() => {
+    const sleep = window.setTimeout(() => setState("sleepy"), 20000);
+    return () => window.clearTimeout(sleep);
+  }, [input, lines, state]);
+  useEffect(() => () => timers.current.forEach((timer) => window.clearTimeout(timer)), []);
+
+  const finish = (next: "happy" | "confused") => {
+    setState(next);
+    timers.current.push(window.setTimeout(() => setState("idle"), next === "happy" ? 1200 : 1500));
+  };
+  const route = (path: string) => {
+    append(`routing -> ${path}`, "accent");
+    setState("thinking");
+    timers.current.push(window.setTimeout(() => setState("routing"), 180));
+    timers.current.push(window.setTimeout(() => {
+      finish("happy");
+      navigate(path);
+      window.setTimeout(() => { const heading = document.querySelector("h1"); heading?.setAttribute("tabindex", "-1"); heading?.focus(); }, 0);
+      running.current = false;
+    }, 350));
+  };
+  const run = (raw: string) => {
+    if (running.current) return;
+    const command = raw.trim();
+    if (!command) return;
+    running.current = true;
+    setHistory((items) => [command, ...items.filter((item) => item !== command)].slice(0, 20));
+    historyIndex.current = -1;
+    setInput("");
+    if (typing) setTyping({ ...typing, visible: typing.full });
+    append(`sathvik@portfolio:~$ ${command}`);
+    const { name, argument } = parseCommand(command);
+    const match = matchIntent(argument || name);
+    if (name === "clear") { clear(); running.current = false; finish("happy"); return; }
+    if (name === "help") { append("help  ls  cd <page>  open <resume|github|linkedin>  projects  experience  skills  blogs  contact  whoami  clear"); finish("happy"); running.current = false; return; }
+    if (name === "ls") { append("projects/  experience/  skills/  blogs/  contact/  resume.pdf"); finish("happy"); running.current = false; return; }
+    if (name === "whoami") { append("Sathvik Konduri — B.Tech CSE (AI & ML), Methodist College of Engineering and Technology, Hyderabad."); finish("happy"); running.current = false; return; }
+    if (name === "sudo" && argument === "hire sathvik") { append("permission granted", "accent"); route("/contact"); return; }
+    if (name === "cd" && pagePaths[argument as keyof typeof pagePaths]) { route(pagePaths[argument as keyof typeof pagePaths]); return; }
+    if (pagePaths[name as keyof typeof pagePaths]) { route(pagePaths[name as keyof typeof pagePaths]); return; }
+    if (name === "resume") { window.open(contact.resume, "_blank", "noopener,noreferrer"); append(<a href={contact.resume} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] underline">open resume.pdf ↗</a>, "accent"); finish("happy"); running.current = false; return; }
+    if (name === "open" && ["resume", "github", "linkedin"].includes(argument)) { const target = argument === "resume" ? contact.resume : argument === "github" ? contact.github : contact.linkedin; window.open(target, "_blank", "noopener,noreferrer"); append(<a href={target} target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] underline">open {argument} ↗</a>, "accent"); finish("happy"); running.current = false; return; }
+    if (match?.target && ["projects", "experience", "skills", "blogs", "contact"].includes(match.target) && ["cd", "open"].includes(name)) { route(intentTargetPath[match.target]); return; }
+    const suggestion = match?.suggestion;
+    append(<span>command not found: {command}{suggestion && <> · <button onClick={() => run(suggestion)} className="text-[var(--accent)] underline">did you mean: {suggestion}?</button></>}</span>, "error");
+    finish("confused");
+    running.current = false;
+  };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    wake();
+    if (typing) setTyping({ ...typing, visible: typing.full });
+    if (event.key === "Enter") { event.preventDefault(); run(input); }
+    if (event.key === "Escape") { event.preventDefault(); setInput(""); setState("idle"); }
+    if (event.key === "Tab") { event.preventDefault(); const match = commands.find((command) => command.startsWith(input.toLowerCase())); if (match) setInput(match); }
+    if (event.key === "ArrowUp") { event.preventDefault(); const next = Math.min(historyIndex.current + 1, history.length - 1); historyIndex.current = next; setInput(history[next] ?? ""); }
+    if (event.key === "ArrowDown") { event.preventDefault(); const next = Math.max(historyIndex.current - 1, -1); historyIndex.current = next; setInput(history[next] ?? ""); }
+    if (event.ctrlKey && event.key.toLowerCase() === "l") { event.preventDefault(); clear(); }
+  };
+
+  return <div className="grid items-center gap-8 lg:grid-cols-[0.7fr_1.3fr]"><DeveloperCharacter state={state} /><div className="ink-box bg-[#181818] p-4 text-[#F4F2EC] shadow-[4px_4px_0px_#E12D26] sm:p-5"><div ref={outputRef} aria-live="polite" className="h-56 overflow-y-auto font-mono text-xs leading-6 sm:h-64">{lines.map((line) => <div key={line.id} className={line.tone === "error" ? "text-[#E12D26]" : line.tone === "accent" ? "text-[#E12D26]" : ""}>{typing?.id === line.id ? typing.visible : line.content}</div>)}{state === "thinking" && <div className="text-[#E12D26]">thinking<span className="ml-1 inline-flex gap-0.5"><i>.</i><i>.</i><i>.</i></span></div>}</div><form onSubmit={(event) => { event.preventDefault(); run(input); }} className="mt-3 flex items-center border-t border-[#5C5B57] pt-3"><label htmlFor="terminal-input" className="sr-only">Terminal command</label><span className="mr-2 shrink-0 text-[#E12D26]">sathvik@portfolio:~$</span><input id="terminal-input" ref={inputRef} value={input} onChange={(event) => { wake(); setInput(event.target.value); setState("listening"); }} onKeyDown={onKeyDown} aria-label="Terminal command" autoComplete="off" className="min-w-0 flex-1 bg-transparent font-mono text-xs text-[#F4F2EC] outline-none focus:ring-2 focus:ring-[#E12D26]" /><span className="ml-1 h-4 w-2 animate-pulse bg-[#E12D26]" aria-hidden="true" /></form><div className="mt-3 flex flex-wrap gap-2">{["projects", "skills", "experience", "blogs", "resume", "contact"].map((command) => <button key={command} type="button" onClick={() => run(command)} className="min-h-[44px] border border-[#F4F2EC] px-3 font-mono text-[11px] text-[#F4F2EC] hover:border-[#E12D26] hover:text-[#E12D26]">{command}</button>)}</div></div></div>;
 };
+
+const HeroSection = () => <section className="mx-auto max-w-6xl px-5 pb-20 pt-20 sm:px-8 sm:pt-28"><div className="mb-10"><p className="font-mono text-xs uppercase tracking-widest text-[var(--accent)]">01 // AI ENGINEER IN TRAINING</p><h1 className="font-display mt-5 text-5xl leading-[0.95] sm:text-7xl">Sathvik<br /><span className="text-[var(--accent)]">Konduri.</span></h1><p className="mt-7 max-w-2xl text-lg leading-8 text-[var(--muted-ink)]">B.Tech Computer Science & Engineering (AI & ML) undergraduate at Methodist College of Engineering and Technology, Hyderabad. Expected 2027 · CGPA: 9.11/10.</p><div className="mt-7 flex flex-wrap gap-4"><a href={contact.github} target="_blank" rel="noopener noreferrer" className="ink-btn-secondary px-4"><Github size={16} /> GitHub</a><a href={contact.linkedin} target="_blank" rel="noopener noreferrer" className="ink-btn-secondary px-4"><Linkedin size={16} /> LinkedIn</a><a href={contact.mailto} className="ink-btn-secondary px-4"><Mail size={16} /> Email</a></div></div><TerminalBot /><a href={contact.portfolio} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex min-h-[44px] items-center gap-2 text-sm font-bold hover:text-[var(--accent)]">External portfolio <ArrowUpRight size={15} /></a></section>;
+
+export { DeveloperCharacter, TerminalBot };
 export default HeroSection;
