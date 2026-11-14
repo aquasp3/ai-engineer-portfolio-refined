@@ -1,3 +1,0 @@
-const learningItems = ["Generative AI", "LangGraph & Agentic Workflows", "End-to-end ML Systems"];
-const CurrentlyLearningSection = () => <section className="mx-auto max-w-6xl px-5 py-12 sm:px-8"><div className="ink-box flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6"><p className="shrink-0 font-mono text-xs text-[var(--accent)]">LAB NOTES / CURRENTLY EXPLORING</p><div className="flex flex-wrap gap-3">{learningItems.map((item) => <span key={item} className="border-2 border-[var(--ink)] px-3 py-2 text-sm font-bold">{item}</span>)}</div></div></section>;
-export default CurrentlyLearningSection;

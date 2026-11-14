@@ -1,8 +1,0 @@
-import { ArrowUpRight } from "lucide-react";
-const blogs = [
-  ["01", "NLP pipelines from raw text to meaning", "A practical look at preprocessing, features, and building a complete NLP workflow."],
-  ["02", "LangChain and Generative AI architectures", "Notes on frameworks, retrieval, and the building blocks behind useful LLM applications."],
-  ["03", "Python backend systems in practice", "Writing about APIs, CRUD workflows, and the engineering habits that keep systems understandable."],
-];
-const BlogsSection = () => <section id="blogs" className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24"><div className="grid gap-8 md:grid-cols-[0.3fr_1fr]"><p className="font-mono text-xs text-[var(--accent)]">07 // WRITING</p><div><h2 className="font-display text-4xl sm:text-5xl">Field notes from<br />the learning loop.</h2><div className="mt-8 border-t-2 border-[var(--ink)]">{blogs.map(([number, title, description]) => <a key={number} href="https://medium.com/@sathvikkonduri14" target="_blank" rel="noopener noreferrer" className="group grid gap-3 border-b-2 border-[var(--ink)] py-5 sm:grid-cols-[70px_1fr_30px] sm:items-center"><span className="font-mono text-xs text-[var(--accent)]">{number} //</span><div><h3 className="font-bold group-hover:text-[var(--accent)]">{title}</h3><p className="mt-1 text-sm leading-6 text-[var(--muted-ink)]">{description}</p></div><ArrowUpRight size={20} className="group-hover:text-[var(--accent)]" /></a>)}</div><a href="https://medium.com/@sathvikkonduri14" target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex min-h-[44px] items-center font-bold underline decoration-[var(--accent)] decoration-2 underline-offset-4">Read all on Medium</a></div></div></section>;
-export default BlogsSection;
