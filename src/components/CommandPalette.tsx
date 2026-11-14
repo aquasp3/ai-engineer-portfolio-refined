@@ -130,12 +130,21 @@ const CommandPalette = () => {
     if (event.key === "End") { event.preventDefault(); setActive(Math.max(filtered.length - 1, 0)); }
     if (event.key === "Enter") { event.preventDefault(); runActive(); }
   };
+  const groupedItems = (["NAVIGATE", "ACTIONS"] as const).map((group) => {
+    const groupItems = filtered.filter((item) => item.group === group);
+    if (!groupItems.length) return null;
+    return <div key={group}><p className="px-3 pb-1 pt-2 font-mono text-[10px] tracking-widest text-[var(--muted-ink)]">{group}</p>{groupItems.map((item) => {
+      const index = filtered.indexOf(item);
+      const Icon = item.icon;
+      return <button id={`palette-option-${item.id}`} key={item.id} role="option" aria-selected={index === active} onMouseEnter={() => setActive(index)} onClick={() => item.run()} className={`flex min-h-[48px] w-full items-center gap-3 border-l-2 px-3 text-left font-mono text-xs transition-colors ${index === active ? "border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]" : "border-transparent"} hover:bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]`}><Icon size={15} aria-hidden="true" />{item.label}</button>;
+    })}</div>;
+  });
 
   const palette = open && <div className="fixed inset-0 z-[70] flex items-start justify-center bg-[#181818]/40 px-4 pt-20 opacity-100 transition-opacity duration-150 sm:pt-24" role="presentation" onClick={close}>
     <div ref={dialogRef} className="w-full max-w-2xl scale-100 border-2 border-[var(--ink)] bg-[var(--surface)] p-3 opacity-100 shadow-[6px_6px_0px_var(--ink)] transition-transform duration-150 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="palette-title" onClick={(event) => event.stopPropagation()}>
-      <div className="flex items-center justify-between border-b-2 border-[var(--ink)] px-2 pb-3"><span id="palette-title" className="font-mono text-xs">TOOL CALLS / {isApple ? "⌘K" : "CTRL K"}</span><button onClick={close} aria-label="Close command palette" className="min-h-[44px] min-w-[44px]"><X size={17} className="ml-auto" /></button></div>
+    <div className="flex items-center justify-between border-b-2 border-[var(--ink)] px-2 pb-3"><span id="palette-title" className="font-mono text-xs">TOOL CALLS / {isApple ? "⌘K" : "Ctrl K"}</span><button onClick={close} aria-label="Close command palette" className="min-h-[44px] min-w-[44px]"><X size={17} className="ml-auto" /></button></div>
       <div className="mt-3 flex items-center gap-2 border-2 border-[var(--ink)] px-3 py-2"><Search size={16} aria-hidden="true" /><input ref={inputRef} value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={onInputKeyDown} data-warp-boost="true" autoComplete="off" placeholder="search tool calls..." aria-label="Search tool calls" className="min-h-[32px] min-w-0 flex-1 bg-transparent font-mono text-sm outline-none" aria-controls="palette-options" aria-activedescendant={filtered[active] ? `palette-option-${filtered[active].id}` : undefined} /></div>
-      <div id="palette-options" role="listbox" aria-label="Tool calls" className="mt-3 max-h-[55vh] overflow-y-auto">{filtered.length ? (["NAVIGATE", "ACTIONS"] as const).map((group) => { const groupItems = filtered.filter((item) => item.group === group); return groupItems.length ? <div key={group}><p className="px-3 pb-1 pt-2 font-mono text-[10px] tracking-widest text-[var(--muted-ink)]">{group}</p>{groupItems.map((item) => { const index = filtered.indexOf(item); const Icon = item.icon; return <button id={`palette-option-${item.id}`} key={item.id} role="option" aria-selected={index === active} onMouseEnter={() => setActive(index)} onClick={() => item.run()} className={`flex min-h-[48px] w-full items-center gap-3 border-l-2 px-3 text-left font-mono text-xs transition-colors ${index === active ? "border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]" : "border-transparent"} hover:bg-[color-mix(in_srgb,var(--accent)_8%,transparent)]`}><Icon size={15} aria-hidden="true" />{item.label}</button>; })}</div> : null; })) : <p className="px-3 py-8 text-center font-mono text-xs text-[var(--muted-ink)]">no tool matches. try: projects, resume, contact</p>}</div>
+      <div id="palette-options" role="listbox" aria-label="Tool calls" className="mt-3 max-h-[55vh] overflow-y-auto">{filtered.length ? groupedItems : <p className="px-3 py-8 text-center font-mono text-xs text-[var(--muted-ink)]">no tool matches. try: projects, resume, contact</p>}</div>
       <div className="flex min-h-[32px] items-center justify-between border-t-2 border-[var(--ink)] px-2 pt-3 font-mono text-[10px] text-[var(--muted-ink)]"><span aria-live="polite">{feedback}</span><span>↑↓ move&nbsp;&nbsp; ↵ run&nbsp;&nbsp; esc close</span></div>
     </div>
   </div>;
