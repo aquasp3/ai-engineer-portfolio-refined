@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Menu, X, Github, Linkedin, Mail, Moon, Sun } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Github, Linkedin, Sun, Moon } from "lucide-react";
 import { useActiveSection } from "@/hooks/useActiveSection";
 
 const navLinks = [
@@ -8,228 +7,70 @@ const navLinks = [
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
   { label: "Experience", href: "#experience" },
-  { label: "Blogs", href: "#blogs" },
+  { label: "Writing", href: "#blogs" },
   { label: "Contact", href: "#contact" },
 ];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
-
-  // Use production-grade scroll spy hook
-  const sectionIds = useMemo(
-    () => navLinks.map((link) => link.href.replace("#", "")),
-    []
-  );
+  const sectionIds = useMemo(() => navLinks.map((link) => link.href.slice(1)), []);
   const activeSection = useActiveSection(sectionIds);
 
   useEffect(() => {
     const saved = localStorage.getItem("theme");
-    if (saved === "light") {
-      document.documentElement.classList.remove("dark");
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      setIsDark(true);
-    }
+    const dark = saved ? saved === "dark" : true;
+    document.documentElement.classList.toggle("dark", dark);
+    setIsDark(dark);
   }, []);
 
-  // Toggle theme
   const handleThemeToggle = () => {
-    const root = document.documentElement;
-    const nextIsDark = !root.classList.contains("dark");
-
-    root.classList.toggle("dark", nextIsDark);
-    localStorage.setItem("theme", nextIsDark ? "dark" : "light");
-    setIsDark(nextIsDark);
+    const next = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+    setIsDark(next);
   };
 
   return (
-    <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-5xl px-2">
-      <div className="elite-nav flex items-center justify-between rounded-2xl px-4 py-3 sm:px-6">
-
-        {/* LOGO */}
-        <a 
-          href="/"
-          onClick={(e) => {
-            e.preventDefault();
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          className="flex items-center gap-3 group"
-        >
-          <span
-            className="inline-flex h-12 w-12 items-center justify-center rounded-xl font-extrabold"
-            style={{
-              background: "var(--accent-color)",
-              color: "var(--page-bg)",
-              boxShadow: "0 0 12px rgba(79, 99, 61, 0.3)",
-            }}
-          >
-            SK
-          </span>
-          <span
-            className="hidden sm:block text-sm font-semibold"
-            style={{ color: "var(--text-body)" }}
-          >
-            Sathvik Konduri
-          </span>
+    <header className="sticky top-0 z-50 border-b" style={{ background: "var(--page-bg)", borderColor: "var(--border-color)" }}>
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
+        <a href="#top" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="text-base font-semibold tracking-tight" style={{ color: "var(--text-body)" }}>
+          Sathvik Konduri<span style={{ color: "var(--secondary-color)" }}>.</span>
         </a>
 
-        {/* DESKTOP LINKS */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
-            <motion.a
-              key={link.label}
-              href={link.href}
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              className={`text-sm transition-colors ${activeSection === link.href.slice(1) ? "nav-link-active" : ""}`}
-              style={{ color: "var(--text-body)" }}
-            >
+            <a key={link.label} href={link.href} className={activeSection === link.href.slice(1) ? "nav-link-active text-sm" : "text-sm"} style={{ color: "var(--text-body)" }}>
               {link.label}
-            </motion.a>
+            </a>
           ))}
-        </div>
-
-        {/* RIGHT SIDE */}
-        <div className="hidden md:flex items-center gap-3">
-
-          {/* SOCIAL */}
-          <motion.a
-            href="https://github.com/aquasp3"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="icon-adaptive"
-            whileHover={{ scale: 1.08, y: -1 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            <Github size={18} />
-          </motion.a>
-          <motion.a
-            href="https://linkedin.com/in/sathvikkonduri"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="icon-adaptive"
-            whileHover={{ scale: 1.08, y: -1 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            <Linkedin size={18} />
-          </motion.a>
-          <motion.a
-            href="mailto:sathvikkonduri14@gmail.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="icon-adaptive"
-            whileHover={{ scale: 1.08, y: -1 }}
-            whileTap={{ scale: 0.96 }}
-          >
-            <Mail size={18} />
-          </motion.a>
-
-          {/* THEME TOGGLE */}
-          <button
-            onClick={handleThemeToggle}
-            className="ml-2 rounded-lg p-2 transition-all duration-200"
-            style={{
-              border: "1px solid var(--border-color)",
-              color: "var(--text-body)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "var(--card-bg)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-            }}
-          >
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          <a href="https://github.com/aquasp3" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="icon-adaptive"><Github size={17} /></a>
+          <a href="https://linkedin.com/in/sathvikkonduri" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="icon-adaptive"><Linkedin size={17} /></a>
+          <button onClick={handleThemeToggle} aria-label="Toggle colour theme" className="icon-adaptive rounded-md p-1.5" style={{ border: "1px solid var(--border-color)" }}>
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
           </button>
         </div>
 
-        {/* MOBILE MENU BUTTON */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden"
-          style={{ color: "var(--text-body)" }}
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
+        <button onClick={() => setOpen(!open)} className="md:hidden" aria-label={open ? "Close menu" : "Open menu"} style={{ color: "var(--text-body)" }}>
+          {open ? <X size={21} /> : <Menu size={21} />}
         </button>
-      </div>
+      </nav>
 
-      {/* MOBILE MENU */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="elite-nav mt-2 rounded-2xl p-4 md:hidden"
-          >
+      {open && (
+        <div className="border-t px-5 py-3 md:hidden" style={{ borderColor: "var(--border-color)", background: "var(--page-bg)" }}>
+          <div className="mx-auto flex max-w-6xl flex-col gap-3">
             {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={() => setOpen(false)}
-                className={`block py-2 text-sm transition-colors ${activeSection === link.href.slice(1) ? "nav-link-active" : ""}`}
-                style={{ color: "var(--text-body)" }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "var(--secondary-color)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "var(--text-body)";
-                }}
-              >
-                {link.label}
-              </a>
+              <a key={link.label} href={link.href} onClick={() => setOpen(false)} className="text-sm" style={{ color: "var(--text-body)" }}>{link.label}</a>
             ))}
-
-            <div
-              className="mt-2 flex gap-4 border-t pt-3"
-              style={{ borderColor: "var(--border-color)" }}
-            >
-              <motion.a
-                href="https://github.com/aquasp3"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="icon-adaptive"
-                whileHover={{ scale: 1.08, y: -1 }}
-                whileTap={{ scale: 0.96 }}
-              >
-                <Github size={18} />
-              </motion.a>
-              <motion.a
-                href="https://linkedin.com/in/sathvikkonduri"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="icon-adaptive"
-                whileHover={{ scale: 1.08, y: -1 }}
-                whileTap={{ scale: 0.96 }}
-              >
-                <Linkedin size={18} />
-              </motion.a>
-              <motion.a
-                href="mailto:sathvikkonduri14@gmail.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="icon-adaptive"
-                whileHover={{ scale: 1.08, y: -1 }}
-                whileTap={{ scale: 0.96 }}
-              >
-                <Mail size={18} />
-              </motion.a>
-
-              {/* MOBILE TOGGLE */}
-              <button
-                onClick={handleThemeToggle}
-                className="ml-auto"
-                style={{ color: "var(--text-body)" }}
-              >
-                {isDark ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
+            <div className="flex items-center gap-5 pt-2">
+              <a href="https://github.com/aquasp3" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="icon-adaptive"><Github size={18} /></a>
+              <a href="https://linkedin.com/in/sathvikkonduri" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="icon-adaptive"><Linkedin size={18} /></a>
+              <button onClick={handleThemeToggle} aria-label="Toggle colour theme" className="icon-adaptive">{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+          </div>
+        </div>
+      )}
+    </header>
   );
 };
 
