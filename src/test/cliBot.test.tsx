@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TerminalBot, parseCommand } from "@/components/HeroSection";
+import { TerminalBot } from "@/components/HeroSection";
+import { parseCommand } from "@/lib/cliCommands";
 import { matchIntent } from "@/lib/intents";
 
 const navigateMock = vi.hoisted(() => vi.fn());

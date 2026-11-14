@@ -2,17 +2,13 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowUpRight, Github, Linkedin, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { contact } from "@/data/portfolio";
+import { parseCommand } from "@/lib/cliCommands";
 import { intentTargetPath, matchIntent } from "@/lib/intents";
 
 type CharacterState = "idle" | "listening" | "thinking" | "routing" | "happy" | "confused" | "sleepy";
 type TerminalLine = { id: number; content: string | ReactNode; tone?: "normal" | "error" | "accent" };
 const commands = ["help", "ls", "cd", "open", "projects", "experience", "skills", "blogs", "resume", "contact", "whoami", "clear"];
 const pagePaths = { projects: "/projects", experience: "/experience", skills: "/skills", blogs: "/blogs", contact: "/contact" };
-export const parseCommand = (value: string) => {
-  const raw = value.trim();
-  const [name = "", ...args] = raw.toLowerCase().split(/\s+/);
-  return { raw, name, args, argument: args.join(" ") };
-};
 
 const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
   const rootRef = useRef<HTMLDivElement>(null);
