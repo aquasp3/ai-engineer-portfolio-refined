@@ -1,26 +1,12 @@
-import GlassSection from "./GlassSection";
-
 const AboutSection = () => (
-  <GlassSection id="about">
-    <div className="mb-8 flex flex-col gap-2">
-      <p className="text-sm" style={{ color: "var(--secondary-color)" }}>A little about me</p>
-      <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl" style={{ color: "var(--text-body)" }}>About</h2>
+  <section id="about" className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24">
+    <div className="grid gap-8 md:grid-cols-[0.3fr_1fr]">
+      <p className="font-mono text-xs text-[var(--accent)]">02 // ABOUT</p>
+      <div className="max-w-3xl space-y-5 text-lg leading-8 text-[var(--muted-ink)]">
+        <p>I’m an AI/ML engineering student interested in machine learning, natural language processing, and building useful applications with AI.</p>
+        <p>My work spans text classification, air-quality prediction, retrieval-augmented generation, backend APIs, and data-driven decision support. I learn by shipping, measuring, and making the next iteration clearer.</p>
+      </div>
     </div>
-
-    <div className="max-w-3xl space-y-5 text-base leading-8" style={{ color: "var(--text-body)", opacity: 0.84 }}>
-      <p>
-        I’m an AI/ML engineering student interested in machine learning,
-        natural language processing and building useful applications with AI.
-        I enjoy understanding how things work, trying different approaches and
-        learning from the results.
-      </p>
-      <p>
-        I’ve worked on projects involving text classification, air-quality
-        prediction, IoT automation and LLM-based applications. I’m continuing
-        to build my skills through hands-on work and experimentation.
-      </p>
-    </div>
-  </GlassSection>
+  </section>
 );
-
 export default AboutSection;
