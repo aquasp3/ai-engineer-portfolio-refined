@@ -1,102 +1,10 @@
-import { Github, Linkedin, Mail } from "lucide-react";
-import { motion } from "framer-motion";
-import GlassSection from "./GlassSection";
+import { BookOpen, Check, Copy, Github, Linkedin, Mail } from "lucide-react";
+import { useState } from "react";
 
+const email = "sathvikkonduri14@gmail.com";
 const ContactSection = () => {
-  return (
-    <GlassSection id="contact">
-      <h2 className="mb-2 text-2xl font-bold sm:text-3xl" style={{ color: "var(--text-body)" }}>
-        Get In Touch
-      </h2>
-
-      <div className="w-12 h-1 mb-8 rounded-full" style={{ background: "var(--accent-color)", opacity: 0.6 }} />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        whileHover={{ y: -3 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="elite-card p-5 sm:p-6 md:p-8 text-center"
-      >
-        <p
-          className="mb-6 sm:mb-8 max-w-md px-2 sm:px-0 mx-auto leading-relaxed text-sm md:text-base"
-          style={{ color: "var(--text-body)", opacity: 0.84 }}
-        >
-          I'm always open to discussing AI/ML projects, research collaborations,
-          or opportunities. Feel free to reach out!
-        </p>
-
-        <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
-          <motion.a
-            whileHover={{
-              scale: 1.06,
-              y: -1.5,
-              color: "var(--accent-color)",
-              borderColor: "var(--accent-color)",
-              backgroundColor: "var(--card-bg)",
-            }}
-            whileTap={{ scale: 0.95 }}
-            href="https://github.com/aquasp3"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200"
-            style={{
-              color: "var(--text-body)",
-              borderColor: "var(--border-color)",
-              background: "var(--card-bg)",
-            }}
-          >
-            <Github size={20} />
-          </motion.a>
-
-          <motion.a
-            whileHover={{
-              scale: 1.06,
-              y: -1.5,
-              color: "var(--accent-color)",
-              borderColor: "var(--accent-color)",
-              backgroundColor: "var(--card-bg)",
-            }}
-            whileTap={{ scale: 0.95 }}
-            href="https://linkedin.com/in/sathvik-konduri/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200"
-            style={{
-              color: "var(--text-body)",
-              borderColor: "var(--border-color)",
-              background: "var(--card-bg)",
-            }}
-          >
-            <Linkedin size={20} />
-          </motion.a>
-
-          <motion.a
-            whileHover={{
-              scale: 1.06,
-              y: -1.5,
-              color: "var(--accent-color)",
-              borderColor: "var(--accent-color)",
-              backgroundColor: "var(--card-bg)",
-            }}
-            whileTap={{ scale: 0.95 }}
-            href="mailto:sathvikkonduri14@gmail.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200"
-            style={{
-              color: "var(--text-body)",
-              borderColor: "var(--border-color)",
-              background: "var(--card-bg)",
-            }}
-          >
-            <Mail size={20} />
-          </motion.a>
-        </div>
-      </motion.div>
-    </GlassSection>
-  );
+  const [copied, setCopied] = useState(false);
+  const copyEmail = async () => { await navigator.clipboard.writeText(email); setCopied(true); window.setTimeout(() => setCopied(false), 1800); };
+  return <section id="contact" className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24"><div className="ink-box grid gap-8 p-6 sm:p-10 md:grid-cols-[1fr_auto] md:items-end"><div><p className="font-mono text-xs text-[var(--accent)]">08 // CONTACT</p><h2 className="font-display mt-3 text-4xl sm:text-6xl">Let’s make<br />something useful.</h2><p className="mt-5 max-w-xl leading-7 text-[var(--muted-ink)]">Open to AI/ML projects, research collaborations, and thoughtful conversations about building with data.</p></div><div className="flex flex-col gap-3"><button onClick={copyEmail} className="ink-btn-primary px-4">{copied ? <Check size={17} /> : <Copy size={17} />} {copied ? "Copied" : "Copy email"}</button><a href={`mailto:${email}`} className="ink-btn-secondary px-4"><Mail size={17} /> Email me</a><div className="flex gap-2"><a href="https://www.linkedin.com/in/sathvik-konduri" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="ink-btn-secondary min-w-[44px] px-3"><Linkedin size={18} /></a><a href="https://github.com/aquasp3" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="ink-btn-secondary min-w-[44px] px-3"><Github size={18} /></a><a href="https://medium.com/@sathvikkonduri14" target="_blank" rel="noopener noreferrer" aria-label="Medium" className="ink-btn-secondary min-w-[44px] px-3"><BookOpen size={18} /></a></div></div></div></section>;
 };
-
 export default ContactSection;

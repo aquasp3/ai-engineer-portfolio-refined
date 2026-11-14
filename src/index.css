@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,109 +6,87 @@
 
 @layer base {
   :root {
-    --page-bg: #f5f3ed;
-    --text-body: #242923;
-    --accent-color: #315b45;
-    --secondary-color: #66766b;
-    --card-bg: #fbfaf6;
-    --border-color: #deded5;
+    --page-bg: #f4f2ec;
+    --surface: #faf9f5;
+    --ink: #181818;
+    --muted-ink: #5c5b57;
+    --accent: #e12d26;
     --font-sans: 'DM Sans', system-ui, sans-serif;
     --font-mono: 'DM Mono', monospace;
   }
 
   .dark {
-    --page-bg: #171b18;
-    --text-body: #eeeee7;
-    --accent-color: #a5c3ae;
-    --secondary-color: #a5b4a8;
-    --card-bg: #202722;
-    --border-color: #354139;
+    --page-bg: #141413;
+    --surface: #1c1c1a;
+    --ink: #f4f2ec;
+    --muted-ink: #9e9c95;
+    --accent: #e12d26;
   }
 
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
-  }
-
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
   body {
     @apply font-sans antialiased;
     margin: 0;
-    background: var(--page-bg);
-    color: var(--text-body);
+    overflow-x: hidden;
+    background-color: var(--page-bg);
+    color: var(--ink);
+    background-image: radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 0.7px, transparent 0.7px);
+    background-size: 15px 15px;
   }
+  a { text-underline-offset: 4px; }
+  ::selection { background: var(--accent); color: #fff; }
+}
 
-  a {
-    text-underline-offset: 4px;
+@layer components {
+  .ink-box {
+    background: var(--surface);
+    border: 2px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
   }
-
-  ::selection {
-    background: var(--accent-color);
-    color: var(--page-bg);
+  .ink-btn-primary {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid var(--ink);
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+  }
+  .ink-btn-primary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .ink-btn-secondary {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid var(--ink);
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 700;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+  }
+  .ink-btn-secondary:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
   }
 }
 
 @layer utilities {
-  .elite-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    transition: border-color 180ms ease, transform 180ms ease;
-  }
-
-  .elite-card:hover {
-    border-color: var(--secondary-color);
-    transform: translateY(-2px);
-  }
-
-  .elite-nav {
-    background: var(--page-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-  }
-
-  .btn-green {
-    background: var(--accent-color);
-    color: var(--page-bg);
-    font-weight: 600;
-    transition: opacity 180ms ease, transform 180ms ease;
-  }
-
-  .btn-green:hover {
-    opacity: 0.88;
-    transform: translateY(-1px);
-  }
-
-  .nav-link-active {
-    color: var(--accent-color) !important;
-  }
-
-  .nav-link-active::after {
-    content: "";
-    display: block;
-    width: 100%;
-    height: 1px;
-    margin-top: 0.25rem;
-    background: currentColor;
-  }
-
-  .icon-adaptive {
-    color: var(--text-body);
-    transition: color 180ms ease;
-  }
-
-  .icon-adaptive:hover {
-    color: var(--accent-color);
-  }
+  .font-display { font-family: var(--font-sans); font-weight: 800; letter-spacing: -0.03em; }
+  .font-mono { font-family: var(--font-mono); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;

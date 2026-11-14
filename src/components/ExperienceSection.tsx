@@ -1,48 +1,8 @@
-import { motion } from "framer-motion";
-import GlassSection from "./GlassSection";
-
 const experiences = [
-  {
-    role: "Machine Learning Intern",
-    company: "Industry Experience",
-    period: "2024",
-    description: "Improved model accuracy by 12% through feature engineering and hyperparameter optimization. Worked on classification and regression problems with real-world datasets.",
-  },
-  {
-    role: "AI-ML Virtual Intern",
-    company: "Virtual Internship Program",
-    period: "2023",
-    description: "Built and evaluated ML models using TensorFlow and Jupyter. Gained hands-on experience with supervised learning workflows, data preprocessing, and model evaluation.",
-  },
+  ["Vice President", "Street Cause, MCET", "Aug 2025 – May 2026", "Led a team of 10+ volunteers to organize campus social-impact initiatives and community outreach programs."],
+  ["Machine Learning Intern", "Internship.com", "Apr 2025 – Jun 2025", "Developed regression and classification models using Scikit-Learn and Pandas, improving prediction accuracy by 12% through feature engineering and preprocessing."],
+  ["AI-ML Virtual Intern", "Google (EduSkills | AICTE)", "Jan 2025 – Mar 2025", "Practiced supervised learning, data handling, and model evaluation workflows using TensorFlow, Google Colab, and Jupyter Notebooks."],
+  ["Python Full Stack Virtual Intern", "EduSkills (AICTE)", "Oct 2024 – Dec 2024", "Developed Python-based web applications implementing CRUD workflows and REST APIs."],
 ];
-
-const ExperienceSection = () => {
-  return (
-    <GlassSection id="experience">
-      <h2 className="text-2xl font-bold mb-1" style={{ color: "var(--text-body)" }}>Experience</h2>
-      <div className="w-12 h-1 mb-8 rounded-full" style={{ background: "var(--accent-color)", opacity: 0.5 }} />
-      <div className="space-y-4">
-        {experiences.map((exp, i) => (
-          <motion.div
-            key={exp.role}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -4, scale: 1.01 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1, duration: 0.35, ease: "easeOut" }}
-            className="elite-card rounded-xl p-5"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-              <h3 className="text-base font-semibold" style={{ color: "var(--text-body)" }}>{exp.role}</h3>
-              <span className="text-xs font-mono" style={{ color: "var(--accent-color)" }}>{exp.period}</span>
-            </div>
-            <p className="text-sm mb-2 font-medium" style={{ color: "var(--accent-color)" }}>{exp.company}</p>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--text-body)", opacity: 0.8 }}>{exp.description}</p>
-          </motion.div>
-        ))}
-      </div>
-    </GlassSection>
-  );
-};
-
+const ExperienceSection = () => <section id="experience" className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-24"><div className="grid gap-8 md:grid-cols-[0.3fr_1fr]"><p className="font-mono text-xs text-[var(--accent)]">05 // EXPERIENCE</p><div className="border-l-2 border-[var(--ink)]">{experiences.map(([role, company, period, description]) => <article key={role} className="relative border-b-2 border-[var(--ink)] p-5 pl-7 last:border-b-0 sm:p-7 sm:pl-10"><span className="absolute -left-[9px] top-8 h-4 w-4 border-2 border-[var(--ink)] bg-[var(--accent)]" /><div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between"><h3 className="font-display text-2xl">{role}</h3><time className="font-mono text-xs text-[var(--accent)]">{period}</time></div><p className="mt-1 font-bold text-[var(--muted-ink)]">{company}</p><p className="mt-3 max-w-2xl leading-7 text-[var(--muted-ink)]">{description}</p></article>)}</div></div></section>;
 export default ExperienceSection;
