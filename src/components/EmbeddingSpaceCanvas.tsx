@@ -1,11 +1,28 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
-type Streak = { angle: number; progress: number; speed: number; length: number; red: boolean };
-type Rocket = { progress: number; speed: number; lane: number; spin: number; hit: boolean } | null;
+type NodePoint = {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  accent: boolean;
+  label?: string;
+};
+
+type Packet = {
+  from: number;
+  to: number;
+  progress: number;
+  speed: number;
+  color: string;
+};
+
 type BotState = "idle" | "listening" | "thinking" | "routing" | "happy" | "confused" | "sleepy";
 
-const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+const tags = ["RAG", "NLP", "LangGraph", "FastAPI", "Embeddings", "PyTorch", "Ollama"];
+
 const color = (name: string, fallback: string) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 
@@ -13,7 +30,6 @@ const EmbeddingSpaceCanvas = () => {
   const { pathname } = useLocation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const rocketRef = useRef<Rocket>(null);
   const reduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const routeHome = pathname === "/";
   const lowEnd = typeof navigator !== "undefined" && (navigator.hardwareConcurrency || 8) <= 4;
@@ -22,43 +38,48 @@ const EmbeddingSpaceCanvas = () => {
     const canvas = canvasRef.current;
     const wrapper = wrapperRef.current;
     if (!canvas || !wrapper) return;
-    const context = canvas.getContext("2d");
-    if (!context) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
     let ink = color("--ink", "#181818");
     let accent = color("--accent", "#E12D26");
     let botState: BotState = "idle";
 
-    const streaks: Streak[] = [];
     const viewport = { width: 0, height: 0, dpr: 1 };
-    const vanishing = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    const pointer = { x: -9999, y: -9999, active: false };
     const visible = { value: true };
     let frame = 0;
     let lastTime = 0;
-    let boostUntil = 0;
-    let rocketTimer = 0;
     let mounted = true;
 
     const count = Math.max(
-      12,
-      Math.round((window.innerWidth < 640 ? 50 : 120) * (routeHome ? 1 : 0.5) * (lowEnd ? 0.5 : 1))
+      18,
+      Math.round((window.innerWidth < 640 ? 28 : 56) * (routeHome ? 1 : 0.65) * (lowEnd ? 0.6 : 1))
     );
-    const resetStreak = (streak: Streak, initial = false) => {
-      streak.angle = Math.random() * Math.PI * 2;
-      streak.progress = initial ? Math.random() * 0.95 : 0.02;
-      streak.speed = 0.000035 + Math.random() * 0.000035;
-      streak.length = 0.4 + Math.random() * 0.8;
-      streak.red = Math.random() < 0.14;
-    };
-    for (let index = 0; index < count; index += 1) {
-      const streak = { angle: 0, progress: 0, speed: 0, length: 0, red: false };
-      resetStreak(streak, true);
-      streaks.push(streak);
-    }
+
+    const nodes: NodePoint[] = [];
+    const packets: Packet[] = [];
 
     const syncThemeColors = () => {
       ink = color("--ink", "#181818");
       accent = color("--accent", "#E12D26");
+    };
+
+    const initNodes = () => {
+      nodes.length = 0;
+      packets.length = 0;
+      for (let i = 0; i < count; i += 1) {
+        const isTagged = routeHome && i < tags.length;
+        nodes.push({
+          x: Math.random() * viewport.width,
+          y: Math.random() * viewport.height,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
+          radius: isTagged ? 3.5 : 1.8 + Math.random() * 1.4,
+          accent: isTagged || Math.random() < 0.22,
+          label: isTagged ? tags[i] : undefined,
+        });
+      }
     };
 
     const resize = () => {
@@ -69,106 +90,127 @@ const EmbeddingSpaceCanvas = () => {
       canvas.height = Math.floor(viewport.height * viewport.dpr);
       canvas.style.width = `${viewport.width}px`;
       canvas.style.height = `${viewport.height}px`;
-      context.setTransform(viewport.dpr, 0, 0, viewport.dpr, 0, 0);
-      vanishing.x = vanishing.targetX = viewport.width * 0.68;
-      vanishing.y = vanishing.targetY = viewport.height * 0.5;
+      ctx.setTransform(viewport.dpr, 0, 0, viewport.dpr, 0, 0);
+      if (nodes.length === 0) initNodes();
       draw(0);
     };
 
-    const point = (angle: number, distance: number) => ({
-      x: vanishing.x + Math.cos(angle) * viewport.width * distance,
-      y: vanishing.y + Math.sin(angle) * viewport.height * distance,
-    });
-
-    const rocketPoint = (progress: number, lane: number) => {
-      const startX = viewport.width * 0.05;
-      const endX = viewport.width * 0.55;
-      const x = startX + (endX - startX) * progress;
-      const y =
-        viewport.height * lane + Math.sin(progress * Math.PI) * viewport.height * (lane < 0.5 ? 0.1 : -0.1);
-      const nextX = startX + (endX - startX) * Math.min(progress + 0.01, 1);
-      const nextY =
-        viewport.height * lane +
-        Math.sin(Math.min(progress + 0.01, 1) * Math.PI) * viewport.height * (lane < 0.5 ? 0.1 : -0.1);
-      return { x, y, angle: Math.atan2(nextY - y, nextX - x) };
-    };
-
-    const drawRocket = (activeAccent: string) => {
-      const rocket = rocketRef.current;
-      if (!rocket) return;
-      const position = rocketPoint(rocket.progress, rocket.lane);
-      const trail = Math.max(0, rocket.progress - 0.12);
-      const trailPoint = rocketPoint(trail, rocket.lane);
-      context.save();
-      context.globalAlpha = 0.22;
-      context.strokeStyle = activeAccent;
-      context.lineWidth = 2;
-      context.beginPath();
-      context.moveTo(trailPoint.x, trailPoint.y);
-      context.lineTo(position.x, position.y);
-      context.stroke();
-      context.translate(position.x, position.y);
-      context.rotate(position.angle + rocket.spin);
-      context.globalAlpha = 1;
-      context.lineWidth = 3;
-      context.strokeStyle = ink;
-      context.fillStyle = activeAccent;
-      context.beginPath();
-      context.moveTo(18, 0);
-      context.quadraticCurveTo(4, -10, -15, -7);
-      context.lineTo(-18, 7);
-      context.quadraticCurveTo(4, 10, 18, 0);
-      context.fill();
-      context.stroke();
-      context.fillStyle = color("--page-bg", "#F4F2EC");
-      context.beginPath();
-      context.arc(-3, 0, 3.5, 0, Math.PI * 2);
-      context.fill();
-      context.stroke();
-      context.strokeStyle = activeAccent;
-      context.beginPath();
-      context.moveTo(-17, -4);
-      context.lineTo(-27 - Math.random() * 8, 0);
-      context.lineTo(-17, 4);
-      context.stroke();
-      context.restore();
-    };
-
     function draw(delta: number) {
-      context.clearRect(0, 0, viewport.width, viewport.height);
+      ctx.clearRect(0, 0, viewport.width, viewport.height);
 
       const isBusy = botState === "thinking" || botState === "routing";
       const isListeningOrHappy = botState === "listening" || botState === "happy";
       const isSleepy = botState === "sleepy";
 
-      const stateMultiplier = isBusy ? 3.2 : isListeningOrHappy ? 1.75 : isSleepy ? 0.35 : 1;
-      const clickBoost = boostUntil > performance.now() ? ((boostUntil - performance.now()) / 600) * 2.2 : 0;
-      const speedBoost = reduced ? 1 : stateMultiplier + clickBoost;
-
+      const speedMult = reduced ? 0 : isBusy ? 3.2 : isListeningOrHappy ? 1.8 : isSleepy ? 0.3 : 1;
       const activeAccent = isListeningOrHappy ? "#22C55E" : accent;
+      const linkDist = viewport.width < 640 ? 115 : isBusy ? 185 : 150;
 
-      vanishing.x += (vanishing.targetX - vanishing.x) * 0.035;
-      vanishing.y += (vanishing.targetY - vanishing.y) * 0.035;
+      // Update node positions
+      for (const node of nodes) {
+        node.x += node.vx * (delta / 16) * speedMult;
+        node.y += node.vy * (delta / 16) * speedMult;
 
-      for (const streak of streaks) {
-        streak.progress += streak.speed * delta * speedBoost;
-        if (streak.progress > 1.2) resetStreak(streak);
-        const end = point(streak.angle, streak.progress);
-        const start = point(streak.angle, Math.max(0.01, streak.progress - streak.length * (isBusy ? 0.09 : 0.06)));
-        context.globalAlpha = (isSleepy ? 0.08 : isBusy ? 0.26 : 0.15) + streak.progress * 0.22;
-        context.strokeStyle = streak.red ? activeAccent : ink;
-        context.lineWidth = streak.red ? (isBusy ? 2.5 : 2) : 1;
-        context.beginPath();
-        context.moveTo(start.x, start.y);
-        context.lineTo(end.x, end.y);
-        context.stroke();
+        if (node.x < 0) { node.x = 0; node.vx *= -1; }
+        if (node.x > viewport.width) { node.x = viewport.width; node.vx *= -1; }
+        if (node.y < 0) { node.y = 0; node.vy *= -1; }
+        if (node.y > viewport.height) { node.y = viewport.height; node.vy *= -1; }
       }
-      context.globalAlpha = 1;
-      if (rocketRef.current) {
-        rocketRef.current.progress += delta * rocketRef.current.speed * speedBoost;
-        if (rocketRef.current.progress >= 1) rocketRef.current = null;
-        else drawRocket(activeAccent);
+
+      // Draw neural connections between nearby nodes
+      for (let i = 0; i < nodes.length; i += 1) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j += 1) {
+          const b = nodes[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < linkDist) {
+            const strength = 1 - dist / linkDist;
+            const isHighlighted = a.accent || b.accent;
+            ctx.globalAlpha = strength * (isSleepy ? 0.14 : isBusy ? 0.55 : 0.32);
+            ctx.strokeStyle = isHighlighted ? activeAccent : ink;
+            ctx.lineWidth = isHighlighted ? 1.35 : 0.9;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+
+            // Spawn neural signal pulse packets along active links
+            if (
+              !reduced &&
+              !isSleepy &&
+              isHighlighted &&
+              packets.length < (isBusy ? 24 : 10) &&
+              Math.random() < (isBusy ? 0.018 : 0.004)
+            ) {
+              packets.push({
+                from: i,
+                to: j,
+                progress: 0,
+                speed: isBusy ? 0.035 : 0.016,
+                color: activeAccent,
+              });
+            }
+          }
+        }
+
+        // Connect nodes to user cursor
+        if (pointer.active) {
+          const pdx = a.x - pointer.x;
+          const pdy = a.y - pointer.y;
+          const pdist = Math.hypot(pdx, pdy);
+          if (pdist < 170) {
+            ctx.globalAlpha = (1 - pdist / 170) * 0.55;
+            ctx.strokeStyle = activeAccent;
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(pointer.x, pointer.y);
+            ctx.stroke();
+          }
+        }
       }
+
+      // Update & draw traveling neural signal packets
+      for (let i = packets.length - 1; i >= 0; i -= 1) {
+        const pkt = packets[i];
+        pkt.progress += pkt.speed * (delta / 16);
+        if (pkt.progress >= 1) {
+          packets.splice(i, 1);
+          continue;
+        }
+        const from = nodes[pkt.from];
+        const to = nodes[pkt.to];
+        if (!from || !to) continue;
+        const px = from.x + (to.x - from.x) * pkt.progress;
+        const py = from.y + (to.y - from.y) * pkt.progress;
+
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = pkt.color;
+        ctx.beginPath();
+        ctx.arc(px, py, isBusy ? 3 : 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Draw nodes & subtle AI embedding labels
+      ctx.font = "500 10px 'DM Mono', monospace";
+      for (const node of nodes) {
+        ctx.globalAlpha = isSleepy ? 0.35 : node.accent ? 0.85 : 0.55;
+        ctx.fillStyle = node.accent ? activeAccent : ink;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (node.label) {
+          ctx.globalAlpha = isSleepy ? 0.25 : isBusy ? 0.75 : 0.45;
+          ctx.fillStyle = ink;
+          ctx.fillText(node.label, node.x + 7, node.y + 3);
+        }
+      }
+
+      ctx.globalAlpha = 1;
     }
 
     const tick = (time: number) => {
@@ -184,43 +226,18 @@ const EmbeddingSpaceCanvas = () => {
     };
 
     const pointerMove = (event: PointerEvent) => {
-      vanishing.targetX = clamp(event.clientX, viewport.width * 0.45, viewport.width * 0.9);
-      vanishing.targetY = clamp(event.clientY, viewport.height * 0.15, viewport.height * 0.85);
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      pointer.active = true;
     };
 
-    const pointerDown = (event: PointerEvent) => {
-      const target = event.target instanceof Element ? event.target : null;
-      if (target?.closest("[data-warp-boost], .ink-btn-primary")) boostUntil = performance.now() + 600;
-      const rocket = rocketRef.current;
-      if (!rocket) return;
-      const position = rocketPoint(rocket.progress, rocket.lane);
-      if (Math.hypot(event.clientX - position.x, event.clientY - position.y) < 30) {
-        rocket.hit = true;
-        rocket.speed = 0.0005;
-        rocket.spin += Math.PI * 2;
-      }
+    const pointerLeave = () => {
+      pointer.active = false;
     };
 
     const onBotState = (event: Event) => {
       const detail = (event as CustomEvent<BotState>).detail;
-      if (!detail) return;
-      botState = detail;
-      if (detail === "routing" || detail === "thinking") {
-        boostUntil = performance.now() + 500;
-      }
-    };
-
-    const spawnRocket = () => {
-      if (routeHome && !lowEnd && !reduced && !rocketRef.current) {
-        rocketRef.current = {
-          progress: 0,
-          speed: 0.00012,
-          lane: Math.random() > 0.5 ? 0.18 : 0.82,
-          spin: 0,
-          hit: false,
-        };
-      }
-      rocketTimer = window.setTimeout(spawnRocket, 8000 + Math.random() * 4000);
+      if (detail) botState = detail;
     };
 
     const themeObserver = new MutationObserver(syncThemeColors);
@@ -243,9 +260,9 @@ const EmbeddingSpaceCanvas = () => {
     document.addEventListener("visibilitychange", resume);
     if (!reduced) {
       window.addEventListener("pointermove", pointerMove, { passive: true });
-      window.addEventListener("pointerdown", pointerDown, { passive: true });
-      if (routeHome && !lowEnd) rocketTimer = window.setTimeout(spawnRocket, 8000 + Math.random() * 4000);
+      window.addEventListener("pointerleave", pointerLeave, { passive: true });
     }
+
     resize();
     if (reduced) draw(0);
     else resume();
@@ -253,21 +270,20 @@ const EmbeddingSpaceCanvas = () => {
     return () => {
       mounted = false;
       if (frame) cancelAnimationFrame(frame);
-      window.clearTimeout(rocketTimer);
       themeObserver.disconnect();
       observer?.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("ai-bot-state", onBotState);
       document.removeEventListener("visibilitychange", resume);
       window.removeEventListener("pointermove", pointerMove);
-      window.removeEventListener("pointerdown", pointerDown);
+      window.removeEventListener("pointerleave", pointerLeave);
     };
   }, [lowEnd, pathname, reduced, routeHome]);
 
   return (
     <div ref={wrapperRef} aria-hidden="true" className="pointer-events-none fixed inset-0 z-0">
-      <canvas ref={canvasRef} className="absolute inset-0 opacity-35 dark:opacity-25" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_38%,var(--page-bg)_78%)] opacity-70" />
+      <canvas ref={canvasRef} className="absolute inset-0 opacity-75 dark:opacity-65" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_55%,var(--page-bg)_92%)] opacity-55" />
     </div>
   );
 };
