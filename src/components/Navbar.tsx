@@ -18,7 +18,10 @@ const Navbar = () => {
   const activeSection = useActiveSection(sectionIds);
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
+    const saved = localStorage.getItem("theme");
+    const dark = saved ? saved === "dark" : true;
+    document.documentElement.classList.toggle("dark", dark);
+    setIsDark(dark);
   }, []);
 
   const handleThemeToggle = () => {
