@@ -36,7 +36,9 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
         current.current.x += (target.current.x - current.current.x) * 0.12;
         current.current.y += (target.current.y - current.current.y) * 0.12;
         root.style.transform = `perspective(700px) rotateX(${current.current.y}deg) rotateY(${current.current.x}deg)`;
-        eyesRef.current?.style.setProperty("transform", `translate3d(${Math.max(-4, Math.min(4, current.current.x / 3))}px, ${Math.max(-4, Math.min(4, current.current.y / 2))}px, 0)`);
+        const glanceX = state === "thinking" ? 3 : Math.max(-3, Math.min(3, current.current.x / 4));
+        const glanceY = state === "thinking" ? -2 : Math.max(-3, Math.min(3, current.current.y / 3));
+        eyesRef.current?.style.setProperty("transform", `translate3d(${glanceX}px, ${glanceY}px, 0)`);
       }
       frame = requestAnimationFrame(animate);
     };
@@ -45,7 +47,7 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
     window.addEventListener("mouseleave", recenter);
     frame = requestAnimationFrame(animate);
     return () => { cancelAnimationFrame(frame); observer?.disconnect(); window.removeEventListener("mousemove", move); window.removeEventListener("mouseleave", recenter); };
-  }, [reduced]);
+  }, [reduced, state]);
 
   useEffect(() => {
     if (reduced) return;
@@ -53,34 +55,216 @@ const DeveloperCharacter = ({ state }: { state: CharacterState }) => {
     return () => window.clearInterval(timer);
   }, [reduced]);
 
-  const eyebrowY = state === "confused" ? 140 : state === "happy" ? 143 : 146;
+  const isRunning = state === "thinking" || state === "routing";
+  const isJumping = state === "happy";
+  const beaconColor =
+    state === "happy" || state === "listening"
+      ? "#22C55E"
+      : state === "sleepy"
+        ? "#5C5B57"
+        : "#E12D26";
+
   return (
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="group order-2 relative mx-auto w-[60%] max-w-[220px] cursor-pointer transition-transform duration-200 lg:order-1 lg:w-full lg:max-w-[280px]"
+      className="group order-2 relative mx-auto w-[65%] max-w-[230px] cursor-pointer transition-transform duration-200 lg:order-1 lg:w-full lg:max-w-[280px]"
     >
-      <svg viewBox="0 0 280 300" className="w-full transition-transform duration-200 group-hover:scale-105">
-        <path d="M75 248c12-48 118-48 130 0v30H75z" fill="#E12D26" stroke="#181818" strokeWidth="4" />
-        <g style={{ transformOrigin: "140px 150px", transition: reduced ? "none" : "transform 220ms cubic-bezier(.22,1,.36,1)" }}>
-          <path d="M77 91c0-57 126-57 126 0v70c0 34-28 62-63 62s-63-28-63-62z" fill="#FAF9F5" stroke="#181818" strokeWidth="4" />
-          <path d="M72 99c-13-57 30-88 75-79 47-5 72 33 60 81l-35-27c-23 13-65 14-100 25z" fill="#E12D26" stroke="#181818" strokeWidth="4" />
-          <path d={`M97 ${eyebrowY}h20M163 ${eyebrowY}h20`} stroke="#181818" strokeWidth="4" strokeLinecap="round" />
-          <g ref={eyesRef}>
-            <ellipse cx="111" cy="158" rx="7" ry={blink ? 1 : 8} fill="#181818" />
-            <ellipse cx="169" cy="158" rx="7" ry={blink ? 1 : 8} fill="#181818" />
-          </g>
-          {state === "confused" ? (
-            <path d="M128 188c8-6 18-6 27 0" stroke="#181818" strokeWidth="4" strokeLinecap="round" />
-          ) : (
-            <path d={state === "happy" ? "M126 180c10 12 20 12 30 0" : "M128 184c9 8 18 8 27 0"} stroke="#181818" strokeWidth="4" strokeLinecap="round" />
-          )}
-          <path d="M113 247v31M167 247v31" stroke="#181818" strokeWidth="4" />
-          <path d="M98 275H75M182 275h23" stroke="#181818" strokeWidth="4" strokeLinecap="round" />
+      <style>{`
+        @keyframes dinoIdle {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-4px); }
+        }
+        @keyframes dinoJump {
+          0%, 100% { transform: translateY(0px); }
+          40% { transform: translateY(-22px); }
+        }
+        @keyframes dinoSprint {
+          0%, 100% { transform: translateY(0px) rotate(4deg); }
+          50% { transform: translateY(-6px) rotate(4deg); }
+        }
+        @keyframes dinoLegLeft {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-6px); }
+        }
+        @keyframes dinoLegRight {
+          0%, 100% { transform: translateY(-6px); }
+          50% { transform: translateY(0px); }
+        }
+        @keyframes dinoGround {
+          0% { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: 32; }
+        }
+        @keyframes dinoZzz {
+          0% { opacity: 0; transform: translate(0, 4px); }
+          50% { opacity: 1; }
+          100% { opacity: 0; transform: translate(10px, -16px); }
+        }
+      `}</style>
+
+      <svg
+        viewBox="0 0 280 280"
+        shapeRendering="crispEdges"
+        className="w-full overflow-visible transition-transform duration-200 group-hover:scale-105"
+      >
+        {/* Pixel Clouds */}
+        <g fill="#181818" opacity="0.16">
+          <rect x="34" y="42" width="36" height="6" />
+          <rect x="42" y="36" width="20" height="6" />
+          <rect x="200" y="58" width="42" height="6" />
+          <rect x="210" y="52" width="22" height="6" />
         </g>
+
+        {/* Ground Track */}
+        <line x1="20" y1="226" x2="260" y2="226" stroke="#181818" strokeWidth="4" />
+        <line
+          x1="24"
+          y1="236"
+          x2="256"
+          y2="236"
+          stroke="#181818"
+          strokeWidth="4"
+          strokeDasharray="6 10"
+          style={{
+            animation: reduced
+              ? "none"
+              : isRunning
+                ? "dinoGround 0.35s linear infinite"
+                : "dinoGround 2.4s linear infinite",
+          }}
+        />
+
+        {/* Mini Pixel Cactus */}
+        <g fill="#E12D26" stroke="#181818" strokeWidth="3">
+          <rect x="216" y="184" width="10" height="42" />
+          <rect x="206" y="196" width="10" height="8" />
+          <rect x="206" y="188" width="6" height="10" />
+          <rect x="226" y="200" width="10" height="8" />
+          <rect x="230" y="190" width="6" height="12" />
+        </g>
+
+        {/* Main Pixel Dino Character */}
+        <g
+          style={{
+            transformOrigin: "130px 180px",
+            animation: reduced
+              ? "none"
+              : isJumping
+                ? "dinoJump 0.55s ease-out infinite"
+                : isRunning
+                  ? "dinoSprint 0.28s ease-in-out infinite"
+                  : state === "sleepy"
+                    ? "none"
+                    : "dinoIdle 2.2s ease-in-out infinite",
+          }}
+        >
+          {/* Tail */}
+          <rect x="52" y="148" width="12" height="24" fill="#181818" />
+          <rect x="64" y="156" width="12" height="24" fill="#181818" />
+          <rect x="76" y="162" width="12" height="26" fill="#181818" />
+
+          {/* Torso */}
+          <rect x="88" y="136" width="54" height="58" fill="#181818" />
+          {/* Belly Highlight */}
+          <rect x="116" y="148" width="20" height="36" fill="#FAF9F5" />
+
+          {/* Red CLI Scarf / Collar */}
+          <rect x="96" y="128" width="54" height="10" fill="#E12D26" />
+          <rect x="86" y="134" width="14" height="18" fill="#E12D26" />
+
+          {/* Little T-Rex Arms */}
+          <rect x="142" y="150" width="18" height="8" fill="#181818" />
+          <rect x="154" y="158" width="6" height="8" fill="#181818" />
+
+          {/* Dino Head */}
+          <rect x="104" y="72" width="76" height="56" fill="#181818" />
+          {/* Snout Tip */}
+          <rect x="180" y="80" width="12" height="32" fill="#181818" />
+          {/* Red Dorsal Spikes */}
+          <rect x="96" y="82" width="8" height="10" fill="#E12D26" />
+          <rect x="96" y="100" width="8" height="10" fill="#E12D26" />
+
+          {/* Jaw / Mouth */}
+          {state === "happy" || state === "listening" ? (
+            <>
+              {/* Open Roar / Happy Jaw */}
+              <rect x="122" y="112" width="64" height="6" fill="#FAF9F5" />
+              <rect x="116" y="118" width="62" height="10" fill="#181818" />
+            </>
+          ) : (
+            <rect x="134" y="112" width="46" height="4" fill="#FAF9F5" />
+          )}
+
+          {/* Eye Socket */}
+          <rect x="122" y="84" width="18" height="18" fill="#FAF9F5" />
+
+          {/* Eye Pupil by State */}
+          <g ref={eyesRef}>
+            {state === "sleepy" ? (
+              <rect x="124" y="92" width="14" height="4" fill="#181818" />
+            ) : blink ? (
+              <rect x="124" y="92" width="14" height="4" fill="#181818" />
+            ) : state === "confused" ? (
+              <>
+                <rect x="126" y="88" width="10" height="10" fill="#E12D26" />
+                <rect x="129" y="91" width="4" height="4" fill="#FAF9F5" />
+              </>
+            ) : (
+              <>
+                <rect x="128" y="88" width="10" height="10" fill="#181818" />
+                <rect x="132" y="89" width="3" height="3" fill="#FAF9F5" />
+              </>
+            )}
+          </g>
+
+          {/* Left Leg */}
+          <g
+            style={{
+              animation: reduced || !isRunning ? "none" : "dinoLegLeft 0.25s steps(2) infinite",
+            }}
+          >
+            <rect x="96" y="194" width="14" height="24" fill="#181818" />
+            <rect x="96" y="218" width="22" height="8" fill="#181818" />
+          </g>
+
+          {/* Right Leg */}
+          <g
+            style={{
+              animation: reduced || !isRunning ? "none" : "dinoLegRight 0.25s steps(2) infinite",
+            }}
+          >
+            <rect x="124" y="194" width="14" height="24" fill="#181818" />
+            <rect x="124" y="218" width="22" height="8" fill="#181818" />
+          </g>
+        </g>
+
+        {/* State Overlays */}
+        {state === "sleepy" && !reduced && (
+          <g fill="#181818" fontFamily="monospace" fontWeight="bold">
+            <text x="192" y="76" fontSize="14" style={{ animation: "dinoZzz 2.2s ease-out infinite" }}>z</text>
+            <text x="206" y="60" fontSize="18" style={{ animation: "dinoZzz 2.2s ease-out 0.7s infinite" }}>Z</text>
+          </g>
+        )}
+
+        {state === "confused" && (
+          <text x="196" y="74" fill="#E12D26" fontFamily="monospace" fontWeight="bold" fontSize="22">
+            ?
+          </text>
+        )}
+
+        {isRunning && !reduced && (
+          <g fill="#E12D26">
+            <rect x="198" y="68" width="6" height="6" className="animate-bounce" />
+            <rect x="210" y="60" width="6" height="6" className="animate-bounce [animation-delay:120ms]" />
+            <rect x="222" y="52" width="6" height="6" className="animate-bounce [animation-delay:240ms]" />
+          </g>
+        )}
       </svg>
-      <span className="absolute bottom-1 right-2 border-2 border-[var(--ink)] bg-[var(--surface)] px-2 py-1 font-mono text-[10px] shadow-[2px_2px_0px_var(--ink)] transition-all duration-150 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0px_var(--accent)]">
-        node: {state}
+
+      {/* CLI Status Badge */}
+      <span className="absolute bottom-1 right-2 inline-flex items-center gap-1.5 border-2 border-[var(--ink)] bg-[var(--surface)] px-2 py-1 font-mono text-[10px] shadow-[2px_2px_0px_var(--ink)] transition-all duration-150 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:shadow-[4px_4px_0px_var(--accent)]">
+        <span className="inline-block h-2 w-2" style={{ backgroundColor: beaconColor }} />
+        dino: {state}
       </span>
     </div>
   );
